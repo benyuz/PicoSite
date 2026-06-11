@@ -14,7 +14,7 @@ public class ConfigLoaderTests
 
         Assert.Equal("PicoSite", config.Title);
         Assert.Equal("default", config.Theme);
-        Assert.Equal(8080, config.Port);
+        Assert.Equal(8090, config.Port);
         Assert.Equal("./_site", config.Output);
     }
 
