@@ -1,0 +1,13 @@
+<aside class="sidebar">
+    <h3>导航</h3>
+    <ul>
+        {% for nav_page in site.pages %}
+            <li>
+                <a href="{{ nav_page.Url }}"
+                   {% if nav_page.Url == current_url %}class="active"{% endif %}>
+                    {{ nav_page.Title }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</aside>

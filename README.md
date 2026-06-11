@@ -36,6 +36,7 @@ To publish, run `picosite build` — static files go to `_site/`.
 |--------|-----------|---------|
 | `--port 3000` | serve | 8090 |
 | `--theme dark` | serve, build | default |
+| `--theme-dir ./Themes/default` | serve, build | exe 同目录下 Themes/ 内的主题 |
 | `--output ./dist` | build | ./_site |
 
 ---

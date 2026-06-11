@@ -19,24 +19,32 @@ public class BuildCommand : Command
             Description = "指定主题",
         };
 
+        var themeDirOption = new Option<string>("--theme-dir")
+        {
+            Description = "主题目录路径（默认 exe 同目录下的 Themes/）",
+        };
+
         AddOption(outputOption);
         AddOption(themeOption);
+        AddOption(themeDirOption);
 
-        this.SetHandler((string output, string theme) =>
+        this.SetHandler((string output, string theme, string themeDir) =>
         {
             var config = configLoader.Load(Directory.GetCurrentDirectory());
             if (!string.IsNullOrEmpty(theme)) config.Theme = theme;
             if (!string.IsNullOrEmpty(output)) config.Output = output;
-            RunBuild(config, markdownParser);
-        }, outputOption, themeOption);
+            RunBuild(config, markdownParser, themeDir);
+        }, outputOption, themeOption, themeDirOption);
     }
 
-    private static void RunBuild(SiteConfig config, MarkdownParser parser)
+    private static void RunBuild(SiteConfig config, MarkdownParser parser, string? themeDirOverride = null)
     {
         var workingDir = Directory.GetCurrentDirectory();
         var sourceDir = SiteGenerator.FindSourceDir(workingDir);
         var outputDir = Path.GetFullPath(config.Output ?? "./_site");
-        var themeDir = Path.Combine(AppContext.BaseDirectory, "Themes", config.Theme ?? "default");
+        var themeDir = !string.IsNullOrEmpty(themeDirOverride)
+            ? Path.GetFullPath(themeDirOverride)
+            : Path.Combine(AppContext.BaseDirectory, "Themes", config.Theme ?? "default");
 
         Console.WriteLine("PicoSite 构建");
         Console.WriteLine($"源目录: {sourceDir}");

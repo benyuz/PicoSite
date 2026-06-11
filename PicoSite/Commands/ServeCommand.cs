@@ -21,24 +21,32 @@ public class ServeCommand : Command
             Description = "指定主题",
         };
 
+        var themeDirOption = new Option<string>("--theme-dir")
+        {
+            Description = "主题目录路径（默认 exe 同目录下的 Themes/）",
+        };
+
         AddOption(portOption);
         AddOption(themeOption);
+        AddOption(themeDirOption);
 
-        this.SetHandler(async (int port, string theme) =>
+        this.SetHandler(async (int port, string theme, string themeDir) =>
         {
             var config = configLoader.Load(Directory.GetCurrentDirectory());
             if (port > 0) config.Port = port;
             if (!string.IsNullOrEmpty(theme)) config.Theme = theme;
 
-            await RunServer(config, markdownParser);
-        }, portOption, themeOption);
+            await RunServer(config, markdownParser, themeDir);
+        }, portOption, themeOption, themeDirOption);
     }
 
-    private static async Task RunServer(SiteConfig config, MarkdownParser parser)
+    private static async Task RunServer(SiteConfig config, MarkdownParser parser, string? themeDirOverride = null)
     {
         var workingDir = Directory.GetCurrentDirectory();
         var sourceDir = SiteGenerator.FindSourceDir(workingDir);
-        var themeDir = Path.Combine(AppContext.BaseDirectory, "Themes", config.Theme ?? "default");
+        var themeDir = !string.IsNullOrEmpty(themeDirOverride)
+            ? Path.GetFullPath(themeDirOverride)
+            : Path.Combine(AppContext.BaseDirectory, "Themes", config.Theme ?? "default");
 
         Console.WriteLine($"PicoSite v1.0");
         Console.WriteLine($"源目录: {sourceDir}");

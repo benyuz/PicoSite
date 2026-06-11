@@ -1,0 +1,182 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+        'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: #fff;
+}
+
+.header {
+    background: #2c3e50;
+    color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header .logo {
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.container {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    gap: 2rem;
+}
+
+.sidebar {
+    width: 240px;
+    flex-shrink: 0;
+}
+
+.sidebar h3 {
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: .5rem;
+    margin-bottom: 1rem;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar li+li {
+    margin-top: .25rem;
+}
+
+.sidebar a {
+    display: block;
+    padding: .4rem .6rem;
+    color: #3498db;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.sidebar a:hover {
+    background: #ecf0f1;
+}
+
+.content {
+    flex: 1;
+    min-width: 0;
+}
+
+.content h1 {
+    color: #2c3e50;
+    border-bottom: 1px solid #eee;
+    padding-bottom: .5rem;
+    margin-bottom: 1.25rem;
+}
+
+.content h2 {
+    color: #2c3e50;
+    margin-top: 2rem;
+    margin-bottom: .75rem;
+}
+
+.content h3 {
+    color: #7f8c8d;
+    margin-top: 1.5rem;
+    margin-bottom: .5rem;
+}
+
+.content p {
+    margin-bottom: 1rem;
+}
+
+.content a {
+    color: #3498db;
+}
+
+.content code {
+    background: #f4f4f4;
+    padding: .15em .35em;
+    border-radius: 3px;
+    font-size: .9em;
+}
+
+.content pre {
+    background: #2c3e50;
+    color: #f8f8f2;
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.content pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+}
+
+.content blockquote {
+    border-left: 4px solid #3498db;
+    padding: .5rem 1rem;
+    margin: 1rem 0;
+    color: #666;
+    background: #f9f9f9;
+    border-radius: 0 4px 4px 0;
+}
+
+.content ul,
+.content ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.content li {
+    margin-bottom: .25rem;
+}
+
+.content img {
+    max-width: 100%;
+    border-radius: 4px;
+}
+
+.content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.content th,
+.content td {
+    border: 1px solid #ddd;
+    padding: .5rem .75rem;
+    text-align: left;
+}
+
+.content th {
+    background: #f4f4f4;
+    font-weight: 600;
+}
+
+.content .date {
+    color: #999;
+    font-size: .85rem;
+    margin-top: -.75rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        padding: 1rem;
+    }
+    .sidebar {
+        width: 100%;
+    }
+}
