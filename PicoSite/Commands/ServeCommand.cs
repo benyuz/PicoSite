@@ -103,7 +103,7 @@ public class ServeCommand : Command
 
                 // 处理页面
                 if (path.EndsWith("/index")) path = path[..^"index".Length];
-                await RenderPage(res, path, generator, templateEngine, site, sourceDir);
+                await RenderPage(res, path, generator, templateEngine, site, sourceDir, themeDir);
                 return false; // 已处理，终止后续
             }
             catch (Exception ex)
@@ -150,13 +150,15 @@ public class ServeCommand : Command
         SiteGenerator generator,
         TemplateEngine templateEngine,
         SiteModel site,
-        string sourceDir)
+        string sourceDir,
+        string themeDir)
     {
         var page = generator.LoadPage(sourceDir, path);
         if (page is null)
         {
             res.StatusCode = 404;
-            await res.WriteAsync("404 - Page Not Found", "text/html; charset=utf-8");
+            var errorHtml = await File.ReadAllTextAsync(Path.Combine(themeDir, "404.html"));
+            await res.WriteAsync(errorHtml, "text/html; charset=utf-8");
             return;
         }
 
