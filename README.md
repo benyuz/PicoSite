@@ -64,6 +64,34 @@ date: 2026-06-09
 Write **Markdown** here.
 ```
 
+### Multi-language
+
+Subdirectories named with ISO language codes under `content/` become language sites
+(detected automatically, no config needed):
+
+```
+content/
+├── zh/
+│   ├── index.md      → /          (default language, no prefix)
+│   └── about.md      → /about
+├── en/
+│   ├── index.md      → /en/
+│   └── about.md      → /en/about
+└── blog/
+    └── post.md       → /blog/post  (non-language pages unaffected)
+```
+
+The default language is the first one detected alphabetically (e.g. `en`).
+Override it in `picosite.json`:
+
+```json
+{ "defaultLanguage": "zh" }
+```
+
+`build` outputs one subdirectory per language: `_site/zh/...`, `_site/en/...`.
+Templates can access `site.language`, `site.languages`, `site.default_language`
+to render a language switcher.
+
 ---
 
 ## Configuration (Optional)

@@ -60,7 +60,12 @@ public class ServeCommand : Command
         // 全局服务实例
         var templateEngine = new TemplateEngine(themeDir);
         var generator = new SiteGenerator(parser, templateEngine, config);
-        var allPages = generator.LoadPages(sourceDir);
+
+        // 多语言：检测语言目录，按语言构建各自的 SiteModel
+        var languages = SiteGenerator.DetectLanguages(sourceDir);
+        var defaultLang = config.DefaultLanguage ?? languages.FirstOrDefault() ?? "";
+
+        var allPages = generator.LoadAllPages(sourceDir);
         if (allPages.Count == 0)
         {
             Console.WriteLine($"⚠️  未找到任何 Markdown 内容文件。");
@@ -69,17 +74,22 @@ public class ServeCommand : Command
             Console.WriteLine($"         或参考 README 创建内容。");
             Console.WriteLine();
         }
-        var site = new SiteModel
-        {
-            Title = config.Title ?? "PicoSite",
-            Description = config.Description,
-            Pages = allPages,
-        };
+
+        // 各语言 site 缓存（key: 语言代码；空串 = 非语言页面）
+        var sites = new Dictionary<string, SiteModel>(StringComparer.OrdinalIgnoreCase);
+        sites[""] = BuildSite(config, generator, sourceDir, null, languages, defaultLang);
+        foreach (var lang in languages)
+            sites[lang] = BuildSite(config, generator, sourceDir, lang, languages, defaultLang);
+
+        if (languages.Count > 0)
+            Console.WriteLine($"多语言: {string.Join(", ", languages)}（默认: {defaultLang}）");
 
         // 热重载（文件变更时刷新站点数据 + 广播 WebSocket）
         var hotReload = new HotReloadService(app, sourceDir, () =>
         {
-            site.Pages = generator.LoadPages(sourceDir);
+            sites[""] = BuildSite(config, generator, sourceDir, null, languages, defaultLang);
+            foreach (var lang in languages)
+                sites[lang] = BuildSite(config, generator, sourceDir, lang, languages, defaultLang);
             Console.WriteLine($"[热重载] 已刷新页面");
         });
 
@@ -103,7 +113,12 @@ public class ServeCommand : Command
 
                 // 处理页面
                 if (path.EndsWith("/index")) path = path[..^"index".Length];
-                await RenderPage(res, path, generator, templateEngine, site, sourceDir, themeDir);
+
+                // 解析语言：非默认语言前缀路由到对应语言，其余走默认语言
+                var (language, langPath) = ResolveLanguage(path, languages, defaultLang);
+                var site = sites.TryGetValue(language ?? "", out var s) ? s : sites[""];
+
+                await RenderPage(res, langPath, generator, templateEngine, site, sourceDir, themeDir);
                 return false; // 已处理，终止后续
             }
             catch (Exception ex)
@@ -144,6 +159,40 @@ public class ServeCommand : Command
         exit.Wait();
     }
 
+    private static SiteModel BuildSite(SiteConfig config, SiteGenerator generator, string sourceDir,
+        string? language, List<string> languages, string defaultLang)
+    {
+        return new SiteModel
+        {
+            Title = config.Title ?? "PicoSite",
+            Description = config.Description,
+            Language = language,
+            Languages = languages,
+            DefaultLanguage = defaultLang,
+            Pages = generator.LoadPages(sourceDir, language),
+        };
+    }
+
+    /// <summary>
+    /// 从请求路径解析语言：路径首段是非默认语言代码时路由到该语言并剥离前缀；
+    /// 否则归默认语言（无语言目录时归非语言页面）。
+    /// </summary>
+    private static (string? Language, string Path) ResolveLanguage(string path, List<string> languages, string defaultLang)
+    {
+        var trimmed = path.TrimStart('/');
+        var parts = trimmed.Split('/', 2);
+        var first = parts[0];
+
+        if (languages.Contains(first, StringComparer.OrdinalIgnoreCase)
+            && !string.Equals(first, defaultLang, StringComparison.OrdinalIgnoreCase))
+        {
+            var rest = parts.Length > 1 ? "/" + parts[1] : "/";
+            return (first, rest);
+        }
+
+        return (string.IsNullOrEmpty(defaultLang) ? null : defaultLang, path);
+    }
+
     private static async Task RenderPage(
         HttpListenerResponse res,
         string path,
@@ -153,7 +202,7 @@ public class ServeCommand : Command
         string sourceDir,
         string themeDir)
     {
-        var page = generator.LoadPage(sourceDir, path);
+        var page = generator.LoadPage(sourceDir, path, site.Language);
         if (page is null)
         {
             res.StatusCode = 404;

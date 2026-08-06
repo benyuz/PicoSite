@@ -32,6 +32,9 @@ public class TemplateEngine
         {
             ["title"] = site.Title,
             ["description"] = site.Description ?? "",
+            ["language"] = site.Language ?? "",
+            ["default_language"] = site.DefaultLanguage ?? "",
+            ["languages"] = site.Languages ?? new List<string>(),
             ["pages"] = site.Pages.Select(p => new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {
                 ["Title"] = p.Title,

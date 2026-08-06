@@ -62,6 +62,31 @@ date: 2026-06-09
 ## 正文
 
 支持 **Markdown** 语法。
+
+### 多语言
+
+`content/` 下目录名为 ISO 语言代码的子目录自动成为语言站点（零配置自动检测）：
+
+```
+content/
+├── zh/
+│   ├── index.md      → /          （默认语言，不带前缀）
+│   └── about.md      → /about
+├── en/
+│   ├── index.md      → /en/
+│   └── about.md      → /en/about
+└── blog/
+    └── post.md       → /blog/post  （非语言目录不受影响）
+```
+
+默认语言取字母序第一个检测到的（如 `en`），可在 `picosite.json` 里覆盖：
+
+```json
+{ "defaultLanguage": "zh" }
+```
+
+`build` 时每语言输出一个子目录：`_site/zh/...`、`_site/en/...`。
+模板中可用 `site.language`、`site.languages`、`site.default_language` 渲染语言切换器。
 ```
 
 ---

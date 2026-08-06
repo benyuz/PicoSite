@@ -8,73 +8,162 @@ public class SiteGenerator
     private readonly TemplateEngine _templates;
     private readonly SiteConfig _config;
 
+    // ISO 639-1 常用语言代码（用于自动识别语言目录）
+    private static readonly HashSet<string> IsoLanguages = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "af", "am", "ar", "az", "be", "bg", "bn", "bs", "ca", "cs", "cy", "da", "de",
+        "el", "en", "es", "et", "fa", "fi", "fr", "ga", "he", "hi", "hr", "hu", "hy",
+        "id", "is", "it", "ja", "ka", "kk", "km", "ko", "ky", "lt", "lv", "mk", "mn",
+        "ms", "my", "ne", "nl", "no", "pa", "pl", "pt", "ro", "ru", "si", "sk", "sl",
+        "sq", "sr", "sv", "sw", "ta", "te", "th", "tl", "tr", "uk", "ur", "uz", "vi", "zh"
+    };
+
+    /// <summary>
+    /// 默认语言代码（配置优先，否则取第一个检测到的语言目录）。
+    /// 注意：需要在确定源目录后使用 ResolveDefaultLanguage 获取最终值。
+    /// </summary>
+    public string DefaultLanguage { get; }
+
     public SiteGenerator(MarkdownParser parser, TemplateEngine templates, SiteConfig config)
     {
         _parser = parser;
         _templates = templates;
         _config = config;
+        DefaultLanguage = config.DefaultLanguage ?? "";
     }
 
-    public List<PageModel> LoadPages(string sourceDir)
+    // ─── 语言检测 ──────────────────────────────────────────
+
+    /// <summary>检测源目录下的一级语言目录（目录名为 ISO 语言代码）。</summary>
+    public static List<string> DetectLanguages(string sourceDir)
+    {
+        if (!Directory.Exists(sourceDir)) return new List<string>();
+
+        return Directory.GetDirectories(sourceDir)
+            .Select(Path.GetFileName)
+            .Where(n => n is not null && IsoLanguages.Contains(n))
+            .Cast<string>()
+            .OrderBy(n => n)
+            .ToList();
+    }
+
+    /// <summary>是否为语言目录名。</summary>
+    public static bool IsLanguageCode(string name) =>
+        name is not null && IsoLanguages.Contains(name);
+
+    /// <summary>解析最终默认语言：配置优先，否则取第一个检测到的语言目录。</summary>
+    public string ResolveDefaultLanguage(string sourceDir)
+    {
+        if (!string.IsNullOrEmpty(_config.DefaultLanguage))
+            return _config.DefaultLanguage;
+        return DetectLanguages(sourceDir).FirstOrDefault() ?? "";
+    }
+
+    /// <summary>
+    /// 加载页面。
+    /// language 为 null 时返回非语言页面（排除语言目录）；
+    /// 指定语言时返回该语言目录下的全部页面。
+    /// </summary>
+    public List<PageModel> LoadPages(string sourceDir, string? language = null)
     {
         var pages = new List<PageModel>();
         if (!Directory.Exists(sourceDir)) return pages;
 
-        foreach (var file in Directory.GetFiles(sourceDir, "*.md", SearchOption.AllDirectories))
+        var languages = DetectLanguages(sourceDir);
+        var searchRoot = language is not null ? Path.Combine(sourceDir, language) : sourceDir;
+
+        foreach (var file in Directory.GetFiles(searchRoot, "*.md", SearchOption.AllDirectories))
         {
-            var page = ParseFile(file, sourceDir);
+            // 非语言模式：跳过所有语言目录下的文件
+            if (language is null && IsInsideAnyLanguageDir(file, sourceDir, languages))
+                continue;
+
+            var page = ParseFile(file, sourceDir, language);
             if (page is not null) pages.Add(page);
         }
 
         return pages.OrderBy(p => p.Url).ToList();
     }
 
-    public PageModel? LoadPage(string sourceDir, string requestPath)
+    /// <summary>加载全部页面（语言 + 非语言），用于统计和热重载。</summary>
+    public List<PageModel> LoadAllPages(string sourceDir)
+    {
+        var pages = LoadPages(sourceDir, null);
+        foreach (var lang in DetectLanguages(sourceDir))
+            pages.AddRange(LoadPages(sourceDir, lang));
+        return pages.OrderBy(p => p.Url).ToList();
+    }
+
+    public PageModel? LoadPage(string sourceDir, string requestPath, string? language = null)
     {
         // 将请求路径转为可能的 .md 文件路径
         var relative = requestPath.TrimStart('/');
         if (string.IsNullOrEmpty(relative)) relative = "index";
 
-        // 路径遍历防护：确保最终路径在 sourceDir 内
+        // 搜索根：语言目录优先，回退源目录（兼容非语言页面）
+        var searchRoots = new List<string>();
+        if (language is not null)
+            searchRoots.Add(Path.Combine(sourceDir, language));
+        searchRoots.Add(sourceDir);
+
         var candidates = new[]
         {
             relative + ".md",
             Path.Combine(relative, "index.md"),
         };
 
-        foreach (var candidate in candidates)
+        foreach (var root in searchRoots)
         {
-            var fullPath = Path.GetFullPath(Path.Combine(sourceDir, candidate));
-            var sourceDirFull = Path.GetFullPath(sourceDir) + Path.DirectorySeparatorChar;
-            if (!fullPath.StartsWith(sourceDirFull, StringComparison.Ordinal))
-                continue;
+            foreach (var candidate in candidates)
+            {
+                var fullPath = Path.GetFullPath(Path.Combine(root, candidate));
+                var rootFull = Path.GetFullPath(root) + Path.DirectorySeparatorChar;
+                if (!fullPath.StartsWith(rootFull, StringComparison.Ordinal))
+                    continue;
 
-            if (File.Exists(fullPath))
-                return ParseFile(fullPath, sourceDir);
+                if (File.Exists(fullPath))
+                    return ParseFile(fullPath, sourceDir, language);
+            }
         }
 
         return null;
     }
 
-    private PageModel? ParseFile(string filePath, string sourceDir)
+    private PageModel? ParseFile(string filePath, string sourceDir, string? language = null)
     {
         try
         {
             var markdown = File.ReadAllText(filePath);
             var (frontMatter, html) = _parser.Parse(markdown);
 
-            var relative = Path.GetRelativePath(sourceDir, filePath)
+            // 文件是否真的位于语言目录内（LoadPage 回退到根目录时可能不在）
+            var langDir = language is not null ? Path.Combine(sourceDir, language) : null;
+            var inLangDir = langDir is not null && IsInside(filePath, langDir);
+
+            // 语言页面以语言目录为基准计算相对路径，否则以源目录为基准
+            var baseDir = inLangDir ? langDir! : sourceDir;
+            var relative = Path.GetRelativePath(baseDir, filePath)
                 .Replace('\\', '/')
                 .Replace(".md", "");
 
             if (relative.EndsWith("/index")) relative = relative[..^6];
             else if (relative == "index") relative = "";
 
+            var url = "/" + relative;
+            // 非默认语言页面加语言前缀（index 页带尾部斜杠：/en/）
+            if (inLangDir)
+            {
+                var defaultLang = ResolveDefaultLanguage(sourceDir);
+                if (!string.IsNullOrEmpty(defaultLang)
+                    && !string.Equals(language, defaultLang, StringComparison.OrdinalIgnoreCase))
+                    url = relative.Length > 0 ? $"/{language}/{relative}" : $"/{language}/";
+            }
+
             var page = new PageModel
             {
                 Title = frontMatter?.GetValueOrDefault("title")?.ToString()
                          ?? Path.GetFileNameWithoutExtension(filePath),
-                Url = "/" + relative,
+                Url = url,
                 Content = html,
                 SourcePath = filePath,
                 FrontMatter = frontMatter,
@@ -113,36 +202,97 @@ public class SiteGenerator
         return textOnly.Length > 150 ? textOnly[..150] + "..." : textOnly;
     }
 
+    private static bool IsInsideAnyLanguageDir(string file, string sourceDir, List<string> languages)
+    {
+        foreach (var lang in languages)
+        {
+            if (IsInside(file, Path.Combine(sourceDir, lang)))
+                return true;
+        }
+        return false;
+    }
+
+    private static bool IsInside(string file, string dir)
+    {
+        var fileFull = Path.GetFullPath(file);
+        var dirFull = Path.GetFullPath(dir) + Path.DirectorySeparatorChar;
+        return fileFull.StartsWith(dirFull, StringComparison.Ordinal);
+    }
+
     // ─── Build 模式 ──────────────────────────────────────────
 
     public void Build(string sourceDir, string outputDir)
     {
-        var pages = LoadPages(sourceDir);
-        var site = new SiteModel
-        {
-            Title = _config.Title ?? "PicoSite",
-            Description = _config.Description,
-            Pages = pages,
-        };
+        var languages = DetectLanguages(sourceDir);
+        // 未配置默认语言时，取第一个检测到的语言目录
+        var defaultLang = !string.IsNullOrEmpty(_config.DefaultLanguage)
+            ? _config.DefaultLanguage
+            : languages.FirstOrDefault() ?? "";
 
         Directory.CreateDirectory(outputDir);
 
-        foreach (var page in pages)
+        // 1) 各语言 → 每语言一个子目录（默认语言同样输出到子目录，部署时映射到站点根）
+        foreach (var lang in languages)
         {
-            try
+            var langOutput = Path.Combine(outputDir, lang);
+            Directory.CreateDirectory(langOutput);
+
+            var pages = LoadPages(sourceDir, lang);
+            var site = new SiteModel
             {
-                var html = _templates.Render("index", site, page, page.Content);
-                var outPath = ResolveOutputPath(outputDir, page.Url);
-                Directory.CreateDirectory(Path.GetDirectoryName(outPath)!);
-                File.WriteAllText(outPath, html);
-            }
-            catch (Exception ex)
+                Title = _config.Title ?? "PicoSite",
+                Description = _config.Description,
+                Language = lang,
+                Languages = languages,
+                DefaultLanguage = defaultLang,
+                Pages = pages,
+            };
+
+            foreach (var page in pages)
+                RenderPageToFile(page, site, langOutput, lang);
+        }
+
+        // 2) 非语言页面 → 输出目录根
+        var rootPages = LoadPages(sourceDir, null);
+        if (rootPages.Count > 0)
+        {
+            var rootSite = new SiteModel
             {
-                Console.Error.WriteLine($"[错误] 页面 \"{page.Url}\" 生成失败: {ex.Message}");
-            }
+                Title = _config.Title ?? "PicoSite",
+                Description = _config.Description,
+                Language = null,
+                Languages = languages,
+                DefaultLanguage = defaultLang,
+                Pages = rootPages,
+            };
+
+            foreach (var page in rootPages)
+                RenderPageToFile(page, rootSite, outputDir, null);
         }
 
         CopyThemeAssets(outputDir);
+    }
+
+    private void RenderPageToFile(PageModel page, SiteModel site, string outputDir, string? language = null)
+    {
+        try
+        {
+            var html = _templates.Render("index", site, page, page.Content);
+
+            // 语言站点输出时剥离 URL 的语言前缀（/en/about → /about），
+            // 因为已经位于 outputDir/<lang>/ 下
+            var url = page.Url;
+            if (language is not null && url.StartsWith("/" + language + "/", StringComparison.OrdinalIgnoreCase))
+                url = url[(language.Length + 1)..];
+
+            var outPath = ResolveOutputPath(outputDir, url);
+            Directory.CreateDirectory(Path.GetDirectoryName(outPath)!);
+            File.WriteAllText(outPath, html);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"[错误] 页面 \"{page.Url}\" 生成失败: {ex.Message}");
+        }
     }
 
     private static string ResolveOutputPath(string outputDir, string url)
