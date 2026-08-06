@@ -14,6 +14,27 @@ public class TemplateEngine
         _themeDir = themeDir;
     }
 
+    /// <summary>
+    /// 按页面选择模板渲染：首页（语言内 URL 为 /）用 index.html，
+    /// 其他页面用 page.html；主题无 page.html 时回退 index.html（兼容）。
+    /// </summary>
+    public string RenderForPage(SiteModel site, PageModel page, string content)
+    {
+        var templateName = IsHomePage(page, site) ? "index" : "page";
+        if (templateName == "page" && !File.Exists(Path.Combine(_themeDir, "page.html")))
+            templateName = "index";
+        return Render(templateName, site, page, content);
+    }
+
+    private static bool IsHomePage(PageModel page, SiteModel site)
+    {
+        var url = page.Url;
+        if (site.Language is not null
+            && url.StartsWith("/" + site.Language + "/", StringComparison.OrdinalIgnoreCase))
+            url = url[(site.Language.Length + 1)..];
+        return url == "/";
+    }
+
     public string Render(string templateName, SiteModel site, PageModel page, string content)
     {
         var path = Path.Combine(_themeDir, $"{templateName}.html");
@@ -27,8 +48,7 @@ public class TemplateEngine
             throw new Exception($"模板解析失败: {error}");
 
         var options = new TemplateOptions();
-        var context = new TemplateContext(options);
-        context.SetValue("site", new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+        var context = new TemplateContext(options);        context.SetValue("site", new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
         {
             ["title"] = site.Title,
             ["description"] = site.Description ?? "",
@@ -66,6 +86,7 @@ public class TemplateEngine
         {
             ["Title"] = node.Title,
             ["Url"] = node.Url ?? "",
+            ["Date"] = node.Date?.ToString("yyyy-MM-dd") ?? "",
             ["Children"] = node.Children.Select(NavToDict).ToList()
         };
     }

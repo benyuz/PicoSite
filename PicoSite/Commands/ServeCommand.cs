@@ -211,7 +211,7 @@ public class ServeCommand : Command
             return;
         }
 
-        var html = templateEngine.Render("index", site, page, page.Content);
+        var html = templateEngine.RenderForPage(site, page, page.Content);
         html = InjectReloadScript(html);
         await res.WriteAsync(html, "text/html; charset=utf-8");
     }

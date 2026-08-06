@@ -118,7 +118,7 @@ public class SiteGenerator
             // 首页（/）直接挂根
             if (segments.Length == 0)
             {
-                root.Add(new NavNode { Title = page.Title, Url = page.Url });
+                root.Add(new NavNode { Title = page.Title, Url = page.Url, Date = page.Date });
                 continue;
             }
 
@@ -137,7 +137,7 @@ public class SiteGenerator
                 parent = dirNode.Children;
             }
 
-            parent.Add(new NavNode { Title = page.Title, Url = page.Url });
+            parent.Add(new NavNode { Title = page.Title, Url = page.Url, Date = page.Date });
         }
 
         return root;
@@ -326,7 +326,7 @@ public class SiteGenerator
     {
         try
         {
-            var html = _templates.Render("index", site, page, page.Content);
+            var html = _templates.RenderForPage(site, page, page.Content);
 
             // 语言站点输出时剥离 URL 的语言前缀（/en/about → /about），
             // 因为已经位于 outputDir/<lang>/ 下

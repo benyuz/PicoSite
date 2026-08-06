@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page.title }} - {{ site.title }}</title>
+    <title>{{ site.title }} - {{ site.description }}</title>
     <meta name="description" content="{{ site.description }}">
     <link rel="stylesheet" href="{{ theme.assets }}/style.css">
 </head>
@@ -13,13 +13,31 @@
     <div class="container">
         {% include "sidebar.html" %}
 
-        <main class="content">
-            <h1>{{ page.title }}</h1>
-            {% if page.date %}
-                <p class="date">{{ page.date }}</p>
+        <main class="content home-content">
+            <!-- 站点简介（index.md 正文） -->
+            {% if content %}
+                <section class="hero">{{ content | raw }}</section>
             {% endif %}
-            {{ content | raw }}
+
+            <!-- 栏目聚合：目录节点 → 栏目块 -->
+            {% for node in site.nav %}
+                {% if node.Children.size > 0 %}
+                    <section class="home-section">
+                        <h2>{{ node.Title }}</h2>
+                        <ul class="home-list">
+                            {% for child in node.Children %}
+                                <li>
+                                    <a href="{{ child.Url }}">{{ child.Title }}</a>
+                                    {% if child.Date %}<span class="home-date">{{ child.Date }}</span>{% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </section>
+                {% endif %}
+            {% endfor %}
         </main>
     </div>
+
+    {% include "footer.html" %}
 </body>
 </html>
