@@ -68,6 +68,29 @@ body {
     background: #ecf0f1;
 }
 
+/* 树形导航 */
+.sidebar .nav-dir {
+    margin-top: .4rem;
+}
+
+.sidebar .nav-dir-title {
+    display: block;
+    padding: .3rem .6rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.sidebar .nav-children {
+    padding-left: .75rem;
+    border-left: 2px solid #ecf0f1;
+    margin-left: .6rem;
+}
+
+.sidebar a.active {
+    background: #3498db;
+    color: #fff;
+}
+
 .content {
     flex: 1;
     min-width: 0;

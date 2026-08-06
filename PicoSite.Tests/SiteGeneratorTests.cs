@@ -109,4 +109,76 @@ public class SiteGeneratorTests : IDisposable
         Assert.Equal("博文", page!.Title);
         Assert.Equal("/blog/post", page.Url);
     }
+
+    // ─── site.nav 渲染树 ──────────────────────────────────
+
+    [Fact]
+    public void BuildNavTree_FlatPages_NoDirNodes()
+    {
+        var pages = new List<PageModel>
+        {
+            new() { Title = "首页", Url = "/" },
+            new() { Title = "关于", Url = "/about" },
+        };
+
+        var nav = SiteGenerator.BuildNavTree(pages);
+
+        Assert.Equal(2, nav.Count);
+        Assert.Equal("/", nav[0].Url);
+        Assert.Equal("关于", nav[1].Title);
+        Assert.Empty(nav[0].Children);
+    }
+
+    [Fact]
+    public void BuildNavTree_NestedPages_CreatesDirNodes()
+    {
+        var pages = new List<PageModel>
+        {
+            new() { Title = "首页", Url = "/" },
+            new() { Title = "第一篇", Url = "/blog/post-1" },
+            new() { Title = "第二篇", Url = "/blog/post-2" },
+            new() { Title = "关于", Url = "/about" },
+        };
+
+        var nav = SiteGenerator.BuildNavTree(pages);
+
+        // 按 URL 字典序：/、/about、/blog/* —— 顶层为 首页、关于、blog 目录
+        Assert.Equal(3, nav.Count);
+        Assert.Equal("/", nav[0].Url);
+        Assert.Equal("关于", nav[1].Title);
+        var blog = nav[2];
+        Assert.Equal("blog", blog.Title);
+        Assert.Null(blog.Url); // 目录节点
+        Assert.Equal(2, blog.Children.Count);
+        Assert.Equal("/blog/post-1", blog.Children[0].Url);
+        Assert.Equal("/blog/post-2", blog.Children[1].Url);
+    }
+
+    [Fact]
+    public void BuildNavTree_LanguagePages_StripsLangPrefix()
+    {
+        var pages = _generator.LoadPages(_sourceDir, "en"); // /en/ 与 /en/about
+
+        var nav = SiteGenerator.BuildNavTree(pages, "en");
+
+        // 剥离 /en 前缀后：根层级直接是 首页 + about，没有 en 目录节点
+        Assert.Equal(2, nav.Count);
+        Assert.Contains(nav, n => n.Url == "/en/");
+        Assert.Contains(nav, n => n.Url == "/en/about");
+        Assert.DoesNotContain(nav, n => n.Url is null); // 无目录节点
+    }
+
+    [Fact]
+    public void BuildNavTree_NonLanguagePages_KeepsDirs()
+    {
+        var pages = _generator.LoadPages(_sourceDir, null); // 只有 blog/post
+
+        var nav = SiteGenerator.BuildNavTree(pages);
+
+        Assert.Single(nav);
+        Assert.Equal("blog", nav[0].Title);
+        Assert.Null(nav[0].Url);
+        Assert.Single(nav[0].Children);
+        Assert.Equal("/blog/post", nav[0].Children[0].Url);
+    }
 }

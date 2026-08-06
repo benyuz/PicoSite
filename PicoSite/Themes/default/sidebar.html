@@ -1,13 +1,29 @@
 <aside class="sidebar">
     <h3>导航</h3>
-    <ul>
-        {% for nav_page in site.pages %}
-            <li>
-                <a href="{{ nav_page.Url }}"
-                   {% if nav_page.Url == current_url %}class="active"{% endif %}>
-                    {{ nav_page.Title }}
-                </a>
-            </li>
+    <ul class="nav-tree">
+        {% for node in site.nav %}
+            {% if node.Children.size > 0 %}
+                <li class="nav-dir">
+                    <span class="nav-dir-title">{{ node.Title }}</span>
+                    <ul class="nav-children">
+                        {% for child in node.Children %}
+                            <li>
+                                <a href="{{ child.Url }}"
+                                   {% if child.Url == current_url %}class="active"{% endif %}>
+                                    {{ child.Title }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ node.Url }}"
+                       {% if node.Url == current_url %}class="active"{% endif %}>
+                        {{ node.Title }}
+                    </a>
+                </li>
+            {% endif %}
         {% endfor %}
     </ul>
 </aside>

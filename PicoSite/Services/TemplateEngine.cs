@@ -39,7 +39,9 @@ public class TemplateEngine
             {
                 ["Title"] = p.Title,
                 ["Url"] = p.Url
-            }).ToList()
+            }).ToList(),
+            ["nav"] = SiteGenerator.BuildNavTree(site.Pages, site.Language)
+                .Select(NavToDict).ToList()
         });
         context.SetValue("page", new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
         {
@@ -56,6 +58,16 @@ public class TemplateEngine
         });
 
         return template.Render(context);
+    }
+
+    private static Dictionary<string, object> NavToDict(NavNode node)
+    {
+        return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Title"] = node.Title,
+            ["Url"] = node.Url ?? "",
+            ["Children"] = node.Children.Select(NavToDict).ToList()
+        };
     }
 
     private string ResolveIncludes(string source)

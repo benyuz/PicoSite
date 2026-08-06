@@ -94,6 +94,55 @@ public class SiteGenerator
         return pages.OrderBy(p => p.Url).ToList();
     }
 
+    /// <summary>
+    /// 按页面 URL 的目录层级构建导航渲染树。
+    /// 目录节点 Url 为 null，页面节点 Url 为完整路径。
+    /// language 非空时先剥离 URL 的语言前缀（/en/about → /about），
+    /// 使导航层级以语言目录为站点根。
+    /// </summary>
+    public static List<NavNode> BuildNavTree(List<PageModel> pages, string? language = null)
+    {
+        var root = new List<NavNode>();
+        var dirs = new Dictionary<string, NavNode>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var page in pages.OrderBy(p => p.Url))
+        {
+            var url = page.Url;
+
+            // 剥离语言前缀：语言模式下 URL 形如 /en/about
+            if (language is not null && url.StartsWith("/" + language + "/", StringComparison.OrdinalIgnoreCase))
+                url = url[(language.Length + 1)..]; // /en/about → /about
+
+            var segments = url.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+            // 首页（/）直接挂根
+            if (segments.Length == 0)
+            {
+                root.Add(new NavNode { Title = page.Title, Url = page.Url });
+                continue;
+            }
+
+            // 逐级定位/创建目录节点
+            var parent = root;
+            var path = "";
+            for (var i = 0; i < segments.Length - 1; i++)
+            {
+                path += "/" + segments[i];
+                if (!dirs.TryGetValue(path, out var dirNode))
+                {
+                    dirNode = new NavNode { Title = segments[i], Url = null };
+                    dirs[path] = dirNode;
+                    parent.Add(dirNode);
+                }
+                parent = dirNode.Children;
+            }
+
+            parent.Add(new NavNode { Title = page.Title, Url = page.Url });
+        }
+
+        return root;
+    }
+
     public PageModel? LoadPage(string sourceDir, string requestPath, string? language = null)
     {
         // 将请求路径转为可能的 .md 文件路径
