@@ -18,4 +18,10 @@ public class SiteConfig
     /// 为空时链接为根路径。
     /// </summary>
     public string? BaseUrl { get; set; }
+
+    /// <summary>GitHub 仓库链接（配置后 header 显示 GitHub 链接）。</summary>
+    public string? Github { get; set; }
+
+    /// <summary>联系邮箱（配置后 header 显示邮箱链接）。</summary>
+    public string? Email { get; set; }
 }

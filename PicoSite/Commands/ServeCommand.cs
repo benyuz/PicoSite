@@ -170,6 +170,8 @@ public class ServeCommand : Command
             Languages = languages,
             DefaultLanguage = defaultLang,
             BaseUrl = config.BaseUrl ?? "",
+            Github = config.Github,
+            Email = config.Email,
             Pages = generator.LoadPages(sourceDir, language),
         };
     }

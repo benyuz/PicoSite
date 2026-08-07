@@ -69,6 +69,23 @@ body {
     gap: .4rem;
 }
 
+.header-links {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+}
+
+.social-link {
+    color: rgba(255, 255, 255, .75);
+    font-size: .85rem;
+    text-decoration: none;
+    transition: color .2s;
+}
+
+.social-link:hover {
+    color: #fff;
+}
+
 .lang-link {
     color: rgba(255, 255, 255, .65);
     font-size: .8rem;

@@ -17,4 +17,10 @@ public class SiteModel
 
     /// <summary>站点部署子路径（如 "/PicoSite/"），为空时链接为根路径。</summary>
     public string BaseUrl { get; set; } = "";
+
+    /// <summary>GitHub 仓库链接（header 社交链接区用）。</summary>
+    public string? Github { get; set; }
+
+    /// <summary>联系邮箱（header 社交链接区用）。</summary>
+    public string? Email { get; set; }
 }

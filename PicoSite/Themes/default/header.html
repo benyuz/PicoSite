@@ -1,14 +1,22 @@
 ﻿<header class="header">
     <a href="{{ site.base_url }}/" class="logo">{{ site.title }}</a>
-    {% if site.languages.size > 1 %}
-        <nav class="lang-switcher">
-            {% for lang in site.languages %}
-                {% if lang == site.default_language %}
-                    <a href="{{ site.base_url }}/" class="lang-link {% if site.language == lang or site.language == "" %}active{% endif %}">{{ lang }}</a>
-                {% else %}
-                    <a href="{{ site.base_url }}/{{ lang }}/" class="lang-link {% if site.language == lang %}active{% endif %}">{{ lang }}</a>
-                {% endif %}
-            {% endfor %}
-        </nav>
-    {% endif %}
+    <nav class="header-links">
+        {% if site.github %}
+            <a href="{{ site.github }}" class="social-link" target="_blank" rel="noopener">GitHub</a>
+        {% endif %}
+        {% if site.email %}
+            <a href="mailto:{{ site.email }}" class="social-link">{{ site.email }}</a>
+        {% endif %}
+        {% if site.languages.size > 1 %}
+            <span class="lang-switcher">
+                {% for lang in site.languages %}
+                    {% if lang == site.default_language %}
+                        <a href="{{ site.base_url }}/" class="lang-link {% if site.language == lang or site.language == "" %}active{% endif %}">{{ lang }}</a>
+                    {% else %}
+                        <a href="{{ site.base_url }}/{{ lang }}/" class="lang-link {% if site.language == lang %}active{% endif %}">{{ lang }}</a>
+                    {% endif %}
+                {% endfor %}
+            </span>
+        {% endif %}
+    </nav>
 </header>

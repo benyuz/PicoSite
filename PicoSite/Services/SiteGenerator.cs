@@ -295,6 +295,8 @@ public class SiteGenerator
                 Languages = languages,
                 DefaultLanguage = defaultLang,
                 BaseUrl = _config.BaseUrl ?? "",
+                Github = _config.Github,
+                Email = _config.Email,
                 Pages = pages,
             };
 
@@ -314,6 +316,8 @@ public class SiteGenerator
                 Languages = languages,
                 DefaultLanguage = defaultLang,
                 BaseUrl = _config.BaseUrl ?? "",
+                Github = _config.Github,
+                Email = _config.Email,
                 Pages = rootPages,
             };
 
