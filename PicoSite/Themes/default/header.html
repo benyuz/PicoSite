@@ -11,9 +11,9 @@
             <span class="lang-switcher">
                 {% for lang in site.languages %}
                     {% if lang.code == site.default_language %}
-                        <a href="{{ site.base_url }}/" class="lang-link {% if site.language == lang.code or site.language == "" %}active{% endif %}">{{ lang.name }}</a>
+                        <a href="{{ site.base_url }}{{ site.current_path }}" class="lang-link {% if site.language == lang.code or site.language == "" %}active{% endif %}">{{ lang.name }}</a>
                     {% else %}
-                        <a href="{{ site.base_url }}/{{ lang.code }}/" class="lang-link {% if site.language == lang.code %}active{% endif %}">{{ lang.name }}</a>
+                        <a href="{{ site.base_url }}/{{ lang.code }}{{ site.current_path }}" class="lang-link {% if site.language == lang.code %}active{% endif %}">{{ lang.name }}</a>
                     {% endif %}
                 {% endfor %}
             </span>

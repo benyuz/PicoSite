@@ -35,6 +35,19 @@ public class TemplateEngine
         return url == "/";
     }
 
+    /// <summary>
+    /// 当前页面的语言内路径（URL 去掉语言前缀）：/quickstart、/en/quickstart → /quickstart。
+    /// 语言切换器用它拼接目标语言的同页 URL。
+    /// </summary>
+    private static string LanguageInnerPath(PageModel page, SiteModel site)
+    {
+        var url = page.Url;
+        if (site.Language is not null
+            && url.StartsWith("/" + site.Language + "/", StringComparison.OrdinalIgnoreCase))
+            url = url[(site.Language.Length + 1)..];
+        return url;
+    }
+
     public string Render(string templateName, SiteModel site, PageModel page, string content)
     {
         var path = Path.Combine(_themeDir, $"{templateName}.html");
@@ -55,6 +68,7 @@ public class TemplateEngine
             ["language"] = site.Language ?? "",
             ["default_language"] = site.DefaultLanguage ?? "",
             ["base_url"] = (site.BaseUrl ?? "").TrimEnd('/'),
+            ["current_path"] = LanguageInnerPath(page, site),
             ["github"] = site.Github ?? "",
             ["email"] = site.Email ?? "",
             ["languages"] = (site.Languages ?? new List<string>())
