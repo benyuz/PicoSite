@@ -12,6 +12,7 @@ Go/Rust alternatives are lightweight but follow "config-driven + rigid theme" pa
 **PicoSite aims to be: simple, no burden, just works.**
 
 **Download** 👉 https://github.com/benyuz/PicoSite/releases (single-file ~10MB for your platform)
+**Docs** 👉 https://benyuz.github.io/PicoSite/
 
 ---
 
