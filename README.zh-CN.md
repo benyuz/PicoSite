@@ -98,12 +98,30 @@ content/
 ```json
 {
   "title": "我的站点",
+  "description": "站点描述",
   "theme": "default",
-  "port": 8090
+  "port": 8090,
+  "output": "./_site",
+  "defaultLanguage": "zh",
+  "baseUrl": "/",
+  "github": "https://github.com/you/your-site",
+  "email": "you@example.com"
 }
 ```
 
-所有字段可选，不配置用默认值。
+所有字段可选，不配置用默认值：
+
+| 字段 | 默认 | 用途 |
+|------|------|------|
+| `title` | PicoSite | 站点标题 |
+| `description` | — | 站点描述（meta + 首页用） |
+| `theme` | default | 主题名 |
+| `port` | 8090 | 预览端口 |
+| `output` | ./_site | 构建输出目录 |
+| `defaultLanguage` | 第一个语言目录 | 默认语言（URL 不带前缀） |
+| `baseUrl` | — | 部署子路径，如 GitHub Pages 项目页用 `/PicoSite/` |
+| `github` | — | header 显示 GitHub 链接 |
+| `email` | — | header 显示邮箱链接 |
 
 ---
 

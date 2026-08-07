@@ -101,12 +101,30 @@ Create `picosite.json`:
 ```json
 {
   "title": "My Site",
+  "description": "My site description",
   "theme": "default",
-  "port": 8090
+  "port": 8090,
+  "output": "./_site",
+  "defaultLanguage": "zh",
+  "baseUrl": "/",
+  "github": "https://github.com/you/your-site",
+  "email": "you@example.com"
 }
 ```
 
-All fields are optional.
+All fields are optional:
+
+| Field | Default | Purpose |
+|-------|---------|---------|
+| `title` | PicoSite | Site title |
+| `description` | — | Site description (used in meta + homepage) |
+| `theme` | default | Theme name |
+| `port` | 8090 | Dev server port |
+| `output` | ./_site | Build output dir |
+| `defaultLanguage` | first lang dir | Default language (no URL prefix) |
+| `baseUrl` | — | Deploy subpath, e.g. `/PicoSite/` for GitHub Pages project sites |
+| `github` | — | GitHub link shown in header |
+| `email` | — | Email link shown in header |
 
 ---
 
