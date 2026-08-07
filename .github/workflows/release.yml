@@ -24,7 +24,6 @@ jobs:
           dotnet publish PicoSite/PicoSite.csproj `
             --configuration Release `
             --runtime win-x64 `
-            -p:PublishAot=true `
             -p:DebugType=embedded `
             --output ./publish/win-x64
 
@@ -53,7 +52,6 @@ jobs:
           dotnet publish PicoSite/PicoSite.csproj \
             --configuration Release \
             --runtime linux-x64 \
-            -p:PublishAot=true \
             -p:DebugType=embedded \
             --output ./publish/linux-x64
 
@@ -85,7 +83,6 @@ jobs:
           dotnet publish PicoSite/PicoSite.csproj \
             --configuration Release \
             --runtime ${{ matrix.rid }} \
-            -p:PublishAot=true \
             -p:DebugType=embedded \
             --output ./publish/${{ matrix.rid }}
 

@@ -206,4 +206,61 @@ public class SiteGeneratorTests : IDisposable
         Assert.Contains("/PicoSite/about", html);
         Assert.DoesNotContain("/PicoSite//", html);
     }
+
+    // ─── 语言级 site.json 配置 ──────────────────────────
+
+    [Fact]
+    public void LoadLanguageSite_ReadsLanguageSiteJson()
+    {
+        WriteMd(Path.Combine(_sourceDir, "en", "site.json"),
+            "{\n  \"title\": \"English Site\",\n  \"description\": \"English desc\"\n}");
+
+        var (title, desc) = _generator.LoadLanguageSite(_sourceDir, "en");
+
+        Assert.Equal("English Site", title);
+        Assert.Equal("English desc", desc);
+    }
+
+    [Fact]
+    public void LoadLanguageSite_NoSiteJson_ReturnsNull()
+    {
+        // zh 目录没有 site.json
+        var (title, desc) = _generator.LoadLanguageSite(_sourceDir, "zh");
+
+        Assert.Null(title);
+        Assert.Null(desc);
+    }
+
+    // ─── build 输出结构 + 语言标题 + 同页切换 ──────────
+
+    [Fact]
+    public void Build_DefaultLanguageToRoot_OtherToSubdir()
+    {
+        var themeDir = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory, "..", "..", "..", "..",
+            "PicoSite", "Themes", "default"));
+        if (!Directory.Exists(themeDir)) return;
+
+        WriteMd(Path.Combine(_sourceDir, "zh", "site.json"),
+            "{\n  \"title\": \"中文站\"\n}");
+        WriteMd(Path.Combine(_sourceDir, "en", "site.json"),
+            "{\n  \"title\": \"English Site\"\n}");
+
+        var config = new SiteConfig { DefaultLanguage = "zh", BaseUrl = "/PicoSite/" };
+        var outDir = Path.Combine(_root, "_site");
+        var gen = new SiteGenerator(new MarkdownParser(), new TemplateEngine(themeDir), config);
+        gen.Build(_sourceDir, outDir);
+
+        // 默认语言 zh 输出到根，非默认 en 输出到子目录
+        Assert.True(File.Exists(Path.Combine(outDir, "index.html")), "默认语言应输出到根");
+        Assert.True(File.Exists(Path.Combine(outDir, "en", "index.html")), "其他语言应输出到子目录");
+
+        // 语言级标题生效
+        var zhHtml = File.ReadAllText(Path.Combine(outDir, "index.html"));
+        Assert.Contains("中文站", zhHtml);
+
+        // 语言切换器同页互切：zh 的 about 页切 en → /en/about
+        var zhAbout = File.ReadAllText(Path.Combine(outDir, "about.html"));
+        Assert.Contains("/PicoSite/en/about", zhAbout);
+    }
 }
