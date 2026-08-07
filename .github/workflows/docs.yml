@@ -41,6 +41,8 @@ jobs:
         working-directory: docs-src
         run: |
           dotnet run --project ../PicoSite/PicoSite.csproj -- build --output ./_site
+          # 多语言站点默认语言在子目录（_site/zh），提升到根供 Pages 根路径访问
+          if [ -d _site/zh ]; then cp -r _site/zh/. _site/; fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
