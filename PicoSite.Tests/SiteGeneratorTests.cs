@@ -199,8 +199,8 @@ public class SiteGeneratorTests : IDisposable
         var gen = new SiteGenerator(new MarkdownParser(), new TemplateEngine(themeDir), config);
         gen.Build(_sourceDir, outDir);
 
-        // 默认语言 zh 输出到 _site/zh/ 子目录
-        var html = File.ReadAllText(Path.Combine(outDir, "zh", "index.html"));
+        // 默认语言 zh 输出到站点根（符合静态站点惯例）
+        var html = File.ReadAllText(Path.Combine(outDir, "index.html"));
 
         // baseUrl 尾部斜杠规范化，链接无双斜杠
         Assert.Contains("/PicoSite/about", html);

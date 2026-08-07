@@ -280,31 +280,7 @@ public class SiteGenerator
 
         Directory.CreateDirectory(outputDir);
 
-        // 1) 各语言 → 每语言一个子目录（默认语言同样输出到子目录，部署时映射到站点根）
-        foreach (var lang in languages)
-        {
-            var langOutput = Path.Combine(outputDir, lang);
-            Directory.CreateDirectory(langOutput);
-
-            var pages = LoadPages(sourceDir, lang);
-            var site = new SiteModel
-            {
-                Title = _config.Title ?? "PicoSite",
-                Description = _config.Description,
-                Language = lang,
-                Languages = languages,
-                DefaultLanguage = defaultLang,
-                BaseUrl = _config.BaseUrl ?? "",
-                Github = _config.Github,
-                Email = _config.Email,
-                Pages = pages,
-            };
-
-            foreach (var page in pages)
-                RenderPageToFile(page, site, langOutput, lang);
-        }
-
-        // 2) 非语言页面 → 输出目录根
+        // 1) 非语言页面 → 输出目录根
         var rootPages = LoadPages(sourceDir, null);
         if (rootPages.Count > 0)
         {
@@ -323,6 +299,32 @@ public class SiteGenerator
 
             foreach (var page in rootPages)
                 RenderPageToFile(page, rootSite, outputDir, null);
+        }
+
+        // 2) 各语言 → 默认语言输出到站点根（符合静态站点惯例），其他语言输出到子目录
+        foreach (var lang in languages)
+        {
+            var langOutput = lang == defaultLang
+                ? outputDir
+                : Path.Combine(outputDir, lang);
+            Directory.CreateDirectory(langOutput);
+
+            var pages = LoadPages(sourceDir, lang);
+            var site = new SiteModel
+            {
+                Title = _config.Title ?? "PicoSite",
+                Description = _config.Description,
+                Language = lang,
+                Languages = languages,
+                DefaultLanguage = defaultLang,
+                BaseUrl = _config.BaseUrl ?? "",
+                Github = _config.Github,
+                Email = _config.Email,
+                Pages = pages,
+            };
+
+            foreach (var page in pages)
+                RenderPageToFile(page, site, langOutput, lang);
         }
 
         CopyThemeAssets(outputDir);

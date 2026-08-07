@@ -86,7 +86,7 @@ content/
 { "defaultLanguage": "zh" }
 ```
 
-`build` 时每语言输出一个子目录：`_site/zh/...`、`_site/en/...`。
+`build` 时默认语言输出到站点根（`_site/index.html`），其他语言输出到子目录：`_site/en/...`。
 模板中可用 `site.language`、`site.languages`、`site.default_language` 渲染语言切换器。
 ```
 

@@ -89,7 +89,8 @@ Override it in `picosite.json`:
 { "defaultLanguage": "zh" }
 ```
 
-`build` outputs one subdirectory per language: `_site/zh/...`, `_site/en/...`.
+`build` outputs the default language to the site root (`_site/index.html`),
+other languages to subdirectories: `_site/en/...`.
 Templates can access `site.language`, `site.languages`, `site.default_language`
 to render a language switcher.
 
