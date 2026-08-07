@@ -1,10 +1,10 @@
 ﻿<header class="header">
     <a href="{{ site.base_url }}/" class="logo">{{ site.title }}</a>
     <nav class="header-links">
-        {% if site.github %}
+        {% if site.github != "" %}
             <a href="{{ site.github }}" class="social-link" target="_blank" rel="noopener">GitHub</a>
         {% endif %}
-        {% if site.email %}
+        {% if site.email != "" %}
             <a href="mailto:{{ site.email }}" class="social-link">{{ site.email }}</a>
         {% endif %}
         {% if site.languages.size > 1 %}
