@@ -41,8 +41,12 @@ jobs:
         working-directory: docs-src
         run: |
           dotnet run --project ../PicoSite/PicoSite.csproj -- build --output ./_site
-          # 多语言站点默认语言在子目录（_site/zh），提升到根供 Pages 根路径访问
-          if [ -d _site/zh ]; then cp -r _site/zh/. _site/; fi
+          # 多语言站点默认语言在子目录（_site/<lang>），提升到根供 Pages 根路径访问
+          # 默认语言从 picosite.json 的 defaultLanguage 读取，而非硬编码
+          DEFAULT_LANG=$(jq -r '.defaultLanguage // empty' picosite.json)
+          if [ -n "$DEFAULT_LANG" ] && [ -d "_site/$DEFAULT_LANG" ]; then
+            cp -r "_site/$DEFAULT_LANG/." "_site/"
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
