@@ -51,12 +51,66 @@ public class SiteGenerator
     public static bool IsLanguageCode(string name) =>
         name is not null && IsoLanguages.Contains(name);
 
+    /// <summary>
+    /// 语言代码 → 本地显示名（切换按钮用原语言名显示）。
+    /// 未收录的代码返回自身。
+    /// </summary>
+    public static string LanguageDisplayName(string code) =>
+        LanguageNames.TryGetValue(code, out var name) ? name : code;
+
+    private static readonly Dictionary<string, string> LanguageNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["zh"] = "中文",
+        ["en"] = "English",
+        ["ja"] = "日本語",
+        ["ko"] = "한국어",
+        ["fr"] = "Français",
+        ["de"] = "Deutsch",
+        ["es"] = "Español",
+        ["ru"] = "Русский",
+        ["pt"] = "Português",
+        ["it"] = "Italiano",
+        ["ar"] = "العربية",
+        ["hi"] = "हिन्दी",
+        ["nl"] = "Nederlands",
+        ["pl"] = "Polski",
+        ["tr"] = "Türkçe",
+        ["vi"] = "Tiếng Việt",
+        ["th"] = "ไทย",
+        ["uk"] = "Українська",
+    };
+
     /// <summary>解析最终默认语言：配置优先，否则取第一个检测到的语言目录。</summary>
     public string ResolveDefaultLanguage(string sourceDir)
     {
         if (!string.IsNullOrEmpty(_config.DefaultLanguage))
             return _config.DefaultLanguage;
         return DetectLanguages(sourceDir).FirstOrDefault() ?? "";
+    }
+
+    /// <summary>
+    /// 读取语言目录下的 site.json（可选，覆盖该语言的站点级配置）。
+    /// 当前只支持 title/description 按语言区分。
+    /// </summary>
+    public (string? Title, string? Description) LoadLanguageSite(string sourceDir, string? language)
+    {
+        if (language is null) return (null, null);
+        var path = Path.Combine(sourceDir, language, "site.json");
+        if (!File.Exists(path)) return (null, null);
+
+        try
+        {
+            var json = File.ReadAllText(path);
+            // 用源码生成 context（项目禁用 JSON 反射，AOT 兼容）
+            var cfg = System.Text.Json.JsonSerializer.Deserialize(
+                json, PicoSiteJsonContext.Default.SiteConfig);
+            return (cfg?.Title, cfg?.Description);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"[警告] 无法解析语言配置 {path}: {ex.Message}");
+            return (null, null);
+        }
     }
 
     /// <summary>
@@ -309,11 +363,14 @@ public class SiteGenerator
                 : Path.Combine(outputDir, lang);
             Directory.CreateDirectory(langOutput);
 
+            // 语言级站点配置（site.json 覆盖 title/description）
+            var (langTitle, langDesc) = LoadLanguageSite(sourceDir, lang);
+
             var pages = LoadPages(sourceDir, lang);
             var site = new SiteModel
             {
-                Title = _config.Title ?? "PicoSite",
-                Description = _config.Description,
+                Title = langTitle ?? _config.Title ?? "PicoSite",
+                Description = langDesc ?? _config.Description,
                 Language = lang,
                 Languages = languages,
                 DefaultLanguage = defaultLang,

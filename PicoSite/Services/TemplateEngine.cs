@@ -57,7 +57,12 @@ public class TemplateEngine
             ["base_url"] = (site.BaseUrl ?? "").TrimEnd('/'),
             ["github"] = site.Github ?? "",
             ["email"] = site.Email ?? "",
-            ["languages"] = site.Languages ?? new List<string>(),
+            ["languages"] = (site.Languages ?? new List<string>())
+                .Select(l => new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["code"] = l,
+                    ["name"] = SiteGenerator.LanguageDisplayName(l)
+                }).ToList(),
             ["pages"] = site.Pages.Select(p => new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {
                 ["Title"] = p.Title,

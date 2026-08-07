@@ -10,10 +10,10 @@
         {% if site.languages.size > 1 %}
             <span class="lang-switcher">
                 {% for lang in site.languages %}
-                    {% if lang == site.default_language %}
-                        <a href="{{ site.base_url }}/" class="lang-link {% if site.language == lang or site.language == "" %}active{% endif %}">{{ lang }}</a>
+                    {% if lang.code == site.default_language %}
+                        <a href="{{ site.base_url }}/" class="lang-link {% if site.language == lang.code or site.language == "" %}active{% endif %}">{{ lang.name }}</a>
                     {% else %}
-                        <a href="{{ site.base_url }}/{{ lang }}/" class="lang-link {% if site.language == lang %}active{% endif %}">{{ lang }}</a>
+                        <a href="{{ site.base_url }}/{{ lang.code }}/" class="lang-link {% if site.language == lang.code %}active{% endif %}">{{ lang.name }}</a>
                     {% endif %}
                 {% endfor %}
             </span>

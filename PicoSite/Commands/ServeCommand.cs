@@ -162,10 +162,13 @@ public class ServeCommand : Command
     private static SiteModel BuildSite(SiteConfig config, SiteGenerator generator, string sourceDir,
         string? language, List<string> languages, string defaultLang)
     {
+        // 语言级站点配置（site.json 覆盖 title/description）
+        var (langTitle, langDesc) = generator.LoadLanguageSite(sourceDir, language);
+
         return new SiteModel
         {
-            Title = config.Title ?? "PicoSite",
-            Description = config.Description,
+            Title = langTitle ?? config.Title ?? "PicoSite",
+            Description = langDesc ?? config.Description,
             Language = language,
             Languages = languages,
             DefaultLanguage = defaultLang,
