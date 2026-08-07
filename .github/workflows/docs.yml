@@ -1,0 +1,52 @@
+name: Docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs-src/**'
+      - 'PicoSite/Themes/**'
+      - 'PicoSite/PicoSite.csproj'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+          dotnet-quality: preview
+
+      - name: Build PicoSite
+        run: dotnet build PicoSite/PicoSite.csproj --configuration Release
+
+      - name: Generate docs
+        working-directory: docs-src
+        run: |
+          dotnet run --project ../PicoSite/PicoSite.csproj -- build --output ./_site
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs-src/_site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
