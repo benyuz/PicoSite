@@ -14,12 +14,12 @@
         {% include "sidebar.html" %}
 
         <main class="content home-content">
-            <!-- 绔欑偣绠€浠嬶紙index.md 姝ｆ枃锛?-->
+            <!-- 站点简介（index.md 正文） -->
             {% if content %}
                 <section class="hero">{{ content | raw }}</section>
             {% endif %}
 
-            <!-- 鏍忕洰鑱氬悎锛氱洰褰曡妭鐐?鈫?鏍忕洰鍧?-->
+            <!-- 栏目聚合：目录节点 → 栏目块 -->
             {% for node in site.nav %}
                 {% if node.Children.size > 0 %}
                     <section class="home-section">
