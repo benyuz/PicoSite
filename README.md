@@ -115,9 +115,11 @@ All fields are optional.
 Themes live in `Themes/<name>/`:
 
 ```
-index.html      # Main layout
-header.html     # Header partial
-sidebar.html    # Sidebar partial
+index.html      # Home page (aggregates sections from site.nav)
+page.html       # Article/page layout (falls back to index.html if missing)
+header.html     # Header partial (logo + language switcher)
+sidebar.html    # Sidebar partial (tree nav)
+footer.html     # Footer partial
 assets/style.css # Styles
 ```
 
@@ -126,7 +128,10 @@ Available template variables:
 | Variable | Description |
 |----------|-------------|
 | `{{ site.title }}` | Site title |
-| `{{ site.pages }}` | All pages |
+| `{{ site.pages }}` | All pages (flat list) |
+| `{{ site.nav }}` | Navigation render tree (nested, dirs have `url = null`) |
+| `{{ site.language }}` | Current language code |
+| `{{ site.languages }}` | All available languages |
 | `{{ page.title }}` | Current page title |
 | `{{ page.url }}` | Current page URL |
 | `{{ page.date }}` | Page date |
@@ -137,6 +142,7 @@ Available template variables:
 > `{% include %}` file names need quotes: `{% include "header.html" %}`.
 
 Supports Liquid tags: `{% include %}` `{% for %}` `{% if %}`.
+The default theme supports dark mode via `prefers-color-scheme` (no JS).
 
 ---
 
@@ -148,11 +154,11 @@ Supports Liquid tags: `{% include %}` `{% for %}` `{% if %}`.
 
 ## Roadmap
 
-| Version | What's coming |
-|---------|---------------|
-| v1.0 | Theme polish + auto sidebar + multi-language + 404 page |
-| v1.1 | API docs generation |
-| v2.0 | Plugin system |
+| Version | Status | What's coming |
+|---------|--------|---------------|
+| v1.0 | ✅ Released | Multi-language, auto tree nav (`site.nav`), theme polish (home aggregation + dark mode), 404 page, `--version` |
+| v1.1 | Planned | API docs generation from XML comments |
+| v2.0 | Planned | Plugin system |
 
 ---
 
