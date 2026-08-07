@@ -14,4 +14,7 @@ public class SiteModel
 
     /// <summary>默认语言代码。</summary>
     public string DefaultLanguage { get; set; } = "";
+
+    /// <summary>站点部署子路径（如 "/PicoSite/"），为空时链接为根路径。</summary>
+    public string BaseUrl { get; set; } = "";
 }

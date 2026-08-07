@@ -1,5 +1,5 @@
-<aside class="sidebar">
-    <h3>导航</h3>
+﻿<aside class="sidebar">
+    <h3>瀵艰埅</h3>
     <ul class="nav-tree">
         {% for node in site.nav %}
             {% if node.Children.size > 0 %}
@@ -8,7 +8,7 @@
                     <ul class="nav-children">
                         {% for child in node.Children %}
                             <li>
-                                <a href="{{ child.Url }}"
+                                <a href="{{ site.base_url }}{{ child.Url }}"
                                    {% if child.Url == current_url %}class="active"{% endif %}>
                                     {{ child.Title }}
                                 </a>
@@ -18,7 +18,7 @@
                 </li>
             {% else %}
                 <li>
-                    <a href="{{ node.Url }}"
+                    <a href="{{ site.base_url }}{{ node.Url }}"
                        {% if node.Url == current_url %}class="active"{% endif %}>
                         {{ node.Title }}
                     </a>

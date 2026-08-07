@@ -294,6 +294,7 @@ public class SiteGenerator
                 Language = lang,
                 Languages = languages,
                 DefaultLanguage = defaultLang,
+                BaseUrl = _config.BaseUrl ?? "",
                 Pages = pages,
             };
 
@@ -312,6 +313,7 @@ public class SiteGenerator
                 Language = null,
                 Languages = languages,
                 DefaultLanguage = defaultLang,
+                BaseUrl = _config.BaseUrl ?? "",
                 Pages = rootPages,
             };
 

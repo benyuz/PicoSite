@@ -54,6 +54,7 @@ public class TemplateEngine
             ["description"] = site.Description ?? "",
             ["language"] = site.Language ?? "",
             ["default_language"] = site.DefaultLanguage ?? "",
+            ["base_url"] = (site.BaseUrl ?? "").TrimEnd('/'),
             ["languages"] = site.Languages ?? new List<string>(),
             ["pages"] = site.Pages.Select(p => new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {

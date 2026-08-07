@@ -1,12 +1,12 @@
-<header class="header">
-    <a href="/" class="logo">{{ site.title }}</a>
+﻿<header class="header">
+    <a href="{{ site.base_url }}/" class="logo">{{ site.title }}</a>
     {% if site.languages.size > 1 %}
         <nav class="lang-switcher">
             {% for lang in site.languages %}
                 {% if lang == site.default_language %}
-                    <a href="/" class="lang-link {% if site.language == lang or site.language == "" %}active{% endif %}">{{ lang }}</a>
+                    <a href="{{ site.base_url }}/" class="lang-link {% if site.language == lang or site.language == "" %}active{% endif %}">{{ lang }}</a>
                 {% else %}
-                    <a href="/{{ lang }}/" class="lang-link {% if site.language == lang %}active{% endif %}">{{ lang }}</a>
+                    <a href="{{ site.base_url }}/{{ lang }}/" class="lang-link {% if site.language == lang %}active{% endif %}">{{ lang }}</a>
                 {% endif %}
             {% endfor %}
         </nav>

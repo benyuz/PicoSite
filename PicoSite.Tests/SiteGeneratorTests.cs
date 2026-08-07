@@ -181,4 +181,29 @@ public class SiteGeneratorTests : IDisposable
         Assert.Single(nav[0].Children);
         Assert.Equal("/blog/post", nav[0].Children[0].Url);
     }
+
+    // ─── baseUrl（GitHub Pages 子路径部署）──────────────
+
+    [Fact]
+    public void Build_WithBaseUrl_PrefixesLinks()
+    {
+        // 找到源码默认主题（测试输出目录不含 Themes）
+        var themeDir = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory, "..", "..", "..", "..",
+            "PicoSite", "Themes", "default"));
+        if (!Directory.Exists(themeDir))
+            return; // 源目录不可用时跳过
+
+        var config = new SiteConfig { BaseUrl = "/PicoSite/", DefaultLanguage = "zh" };
+        var outDir = Path.Combine(_root, "_site");
+        var gen = new SiteGenerator(new MarkdownParser(), new TemplateEngine(themeDir), config);
+        gen.Build(_sourceDir, outDir);
+
+        // 默认语言 zh 输出到 _site/zh/ 子目录
+        var html = File.ReadAllText(Path.Combine(outDir, "zh", "index.html"));
+
+        // baseUrl 尾部斜杠规范化，链接无双斜杠
+        Assert.Contains("/PicoSite/about", html);
+        Assert.DoesNotContain("/PicoSite//", html);
+    }
 }

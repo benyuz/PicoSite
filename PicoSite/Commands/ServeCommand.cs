@@ -169,6 +169,7 @@ public class ServeCommand : Command
             Language = language,
             Languages = languages,
             DefaultLanguage = defaultLang,
+            BaseUrl = config.BaseUrl ?? "",
             Pages = generator.LoadPages(sourceDir, language),
         };
     }

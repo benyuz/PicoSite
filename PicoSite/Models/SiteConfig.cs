@@ -12,4 +12,10 @@ public class SiteConfig
     /// 默认语言代码（如 "zh"）。未配置时取第一个检测到的语言目录。
     /// </summary>
     public string? DefaultLanguage { get; set; }
+
+    /// <summary>
+    /// 站点部署子路径（如 "/PicoSite/"，GitHub Pages 项目页用）。
+    /// 为空时链接为根路径。
+    /// </summary>
+    public string? BaseUrl { get; set; }
 }

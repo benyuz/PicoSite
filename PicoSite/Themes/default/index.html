@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ site.title }} - {{ site.description }}</title>
     <meta name="description" content="{{ site.description }}">
-    <link rel="stylesheet" href="{{ theme.assets }}/style.css">
+    <link rel="stylesheet" href="{{ site.base_url }}{{ theme.assets }}/style.css">
 </head>
 <body>
     {% include "header.html" %}
@@ -14,12 +14,12 @@
         {% include "sidebar.html" %}
 
         <main class="content home-content">
-            <!-- 站点简介（index.md 正文） -->
+            <!-- 绔欑偣绠€浠嬶紙index.md 姝ｆ枃锛?-->
             {% if content %}
                 <section class="hero">{{ content | raw }}</section>
             {% endif %}
 
-            <!-- 栏目聚合：目录节点 → 栏目块 -->
+            <!-- 鏍忕洰鑱氬悎锛氱洰褰曡妭鐐?鈫?鏍忕洰鍧?-->
             {% for node in site.nav %}
                 {% if node.Children.size > 0 %}
                     <section class="home-section">
@@ -27,7 +27,7 @@
                         <ul class="home-list">
                             {% for child in node.Children %}
                                 <li>
-                                    <a href="{{ child.Url }}">{{ child.Title }}</a>
+                                    <a href="{{ site.base_url }}{{ child.Url }}">{{ child.Title }}</a>
                                     {% if child.Date %}<span class="home-date">{{ child.Date }}</span>{% endif %}
                                 </li>
                             {% endfor %}
