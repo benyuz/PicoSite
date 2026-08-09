@@ -1,3 +1,20 @@
 ﻿<footer class="footer">
-    <p>{{ site.title }} · 由 PicoSite 生成</p>
+    <div class="footer-inner">
+        <p class="footer-copy">© {{ site.title }}</p>
+        <p class="footer-powered">由 {% if site.github != "" %}<a href="{{ site.github }}" target="_blank" rel="noopener">PicoSite</a>{% else %}<span>PicoSite</span>{% endif %} 生成</p>
+    </div>
 </footer>
+
+<script>
+(function () {
+    // 主题切换按钮：点击切换 light/dark 并持久化
+    var btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+        var root = document.documentElement;
+        var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        try { localStorage.setItem('picosite-theme', next); } catch (e) { }
+    });
+})();
+</script>

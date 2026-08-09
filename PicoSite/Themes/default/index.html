@@ -6,35 +6,51 @@
     <title>{{ site.title }} - {{ site.description }}</title>
     <meta name="description" content="{{ site.description }}">
     <link rel="stylesheet" href="{{ site.base_url }}{{ theme.assets }}/style.css">
+    <script>try{var t=localStorage.getItem('picosite-theme');if(!t&&matchMedia('(prefers-color-scheme: dark)').matches)t='dark';if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 </head>
 <body>
     {% include "header.html" %}
 
-    <div class="container">
+    <div class="layout">
         {% include "sidebar.html" %}
 
-        <main class="content home-content">
-            <!-- 站点简介（index.md 正文） -->
-            {% if content %}
-                <section class="hero">{{ content | raw }}</section>
-            {% endif %}
-
-            <!-- 栏目聚合：目录节点 → 栏目块 -->
-            {% for node in site.nav %}
-                {% if node.Children.size > 0 %}
-                    <section class="home-section">
-                        <h2>{{ node.Title }}</h2>
-                        <ul class="home-list">
-                            {% for child in node.Children %}
-                                <li>
-                                    <a href="{{ site.base_url }}{{ child.Url }}">{{ child.Title }}</a>
-                                    {% if child.Date %}<span class="home-date">{{ child.Date }}</span>{% endif %}
-                                </li>
-                            {% endfor %}
-                        </ul>
+        <main class="main">
+            <div class="doc">
+                <!-- Hero：index.md 正文（大标题 + 副标题）+ 操作按钮 -->
+                {% if content %}
+                    <section class="hero">
+                        {{ content | raw }}
+                        <div class="hero-actions">
+                            {% if site.github != "" %}
+                                <a class="btn btn-primary" href="{{ site.github }}" target="_blank" rel="noopener">GitHub</a>
+                            {% endif %}
+                            <a class="btn btn-ghost" href="#sections">浏览文档</a>
+                        </div>
                     </section>
                 {% endif %}
-            {% endfor %}
+
+                <!-- 栏目卡片：目录节点 → 卡片网格 -->
+                {% if site.nav.size > 0 %}
+                    <section id="sections" class="cards">
+                        {% for node in site.nav %}
+                            {% if node.Children.size > 0 %}
+                                <div class="card">
+                                    <h2>{{ node.Title }}</h2>
+                                    <ul>
+                                        {% for child in node.Children %}
+                                            <li>
+                                                <a href="{{ site.base_url }}{{ child.Url }}">
+                                                    {{ child.Title }}{% if child.Date %} · {{ child.Date }}{% endif %}
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </section>
+                {% endif %}
+            </div>
         </main>
     </div>
 

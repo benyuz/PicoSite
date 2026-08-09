@@ -212,7 +212,8 @@ public class ServeCommand : Command
         if (page is null)
         {
             res.StatusCode = 404;
-            var errorHtml = await File.ReadAllTextAsync(Path.Combine(themeDir, "404.html"));
+            var errorHtml = templateEngine.Render("404", site,
+                new PageModel { Title = "404", Url = "/404" }, "");
             await res.WriteAsync(errorHtml, "text/html; charset=utf-8");
             return;
         }

@@ -9,6 +9,9 @@ public class TemplateEngine
     private readonly FluidParser _parser = new();
     private readonly string _themeDir;
 
+    /// <summary>主题目录（供生成器定位 404.html 等主题文件）。</summary>
+    public string ThemeDir => _themeDir;
+
     public TemplateEngine(string themeDir)
     {
         _themeDir = themeDir;

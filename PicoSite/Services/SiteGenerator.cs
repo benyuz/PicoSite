@@ -385,6 +385,27 @@ public class SiteGenerator
         }
 
         CopyThemeAssets(outputDir);
+
+        // 404 页：渲染主题 404.html 到输出根（GitHub Pages 等项目站需要根级 404.html）
+        if (File.Exists(Path.Combine(_templates.ThemeDir, "404.html")))
+        {
+            var pages404 = LoadPages(sourceDir, defaultLang);
+            var (t404, d404) = LoadLanguageSite(sourceDir, defaultLang);
+            var site404 = new SiteModel
+            {
+                Title = t404 ?? _config.Title ?? "PicoSite",
+                Description = d404 ?? _config.Description,
+                Language = string.IsNullOrEmpty(defaultLang) ? null : defaultLang,
+                Languages = languages,
+                DefaultLanguage = defaultLang,
+                BaseUrl = _config.BaseUrl ?? "",
+                Github = _config.Github,
+                Email = _config.Email,
+                Pages = pages404,
+            };
+            var errorHtml = _templates.Render("404", site404, new PageModel { Title = "404", Url = "/404.html" }, "");
+            File.WriteAllText(Path.Combine(outputDir, "404.html"), errorHtml);
+        }
     }
 
     private void RenderPageToFile(PageModel page, SiteModel site, string outputDir, string? language = null)

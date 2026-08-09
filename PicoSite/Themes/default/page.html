@@ -6,21 +6,29 @@
     <title>{{ page.title }} - {{ site.title }}</title>
     <meta name="description" content="{{ site.description }}">
     <link rel="stylesheet" href="{{ site.base_url }}{{ theme.assets }}/style.css">
+    <script>try{var t=localStorage.getItem('picosite-theme');if(!t&&matchMedia('(prefers-color-scheme: dark)').matches)t='dark';if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 </head>
 <body>
     {% include "header.html" %}
 
-    <div class="container">
+    <div class="layout">
         {% include "sidebar.html" %}
 
-        <main class="content page-content">
-            <article>
-                <h1>{{ page.title }}</h1>
-                {% if page.date %}
-                    <p class="date">{{ page.date }}</p>
-                {% endif %}
-                {{ content | raw }}
-            </article>
+        <main class="main">
+            <div class="doc page-content">
+                <nav class="breadcrumbs">
+                    <a href="{{ site.base_url }}/">首页</a>
+                    <span class="sep">/</span>
+                    <span>{{ page.title }}</span>
+                </nav>
+                <article>
+                    <h1>{{ page.title }}</h1>
+                    {% if page.date %}
+                        <p class="page-date">{{ page.date }}</p>
+                    {% endif %}
+                    {{ content | raw }}
+                </article>
+            </div>
         </main>
     </div>
 
