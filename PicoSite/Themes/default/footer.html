@@ -1,7 +1,7 @@
 ﻿<footer class="footer">
     <div class="footer-inner">
         <p class="footer-copy">© {{ site.title }}</p>
-        <p class="footer-powered">由 {% if site.github != "" %}<a href="{{ site.github }}" target="_blank" rel="noopener">PicoSite</a>{% else %}<span>PicoSite</span>{% endif %} 生成</p>
+        <p class="footer-powered">{{ theme.i18n.generated_by_prefix }} {% if site.github != "" %}<a href="{{ site.github }}" target="_blank" rel="noopener">{{ site.title }}</a>{% else %}<span>{{ site.title }}</span>{% endif %} {{ theme.i18n.generated_by_suffix }}</p>
     </div>
 </footer>
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 | 页面未找到</title>
+    <title>404 | {{ theme.i18n.not_found_title }}</title>
     <link rel="stylesheet" href="{{ site.base_url }}{{ theme.assets }}/style.css">
     <script>try{var t=localStorage.getItem('picosite-theme');if(!t&&matchMedia('(prefers-color-scheme: dark)').matches)t='dark';if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 </head>
@@ -11,9 +11,9 @@
     <div class="error-page">
         <div class="error-card">
             <div class="error-code">404</div>
-            <h1 class="error-title">页面未找到</h1>
-            <p class="error-desc">你访问的页面不存在或链接有误</p>
-            <a href="{{ site.base_url }}/" class="btn btn-primary">返回首页</a>
+            <h1 class="error-title">{{ theme.i18n.not_found_title }}</h1>
+            <p class="error-desc">{{ theme.i18n.not_found_desc }}</p>
+            <a href="{{ site.base_url }}/" class="btn btn-primary">{{ theme.i18n.back_home }}</a>
         </div>
     </div>
 </body>
