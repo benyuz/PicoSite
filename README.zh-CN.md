@@ -184,6 +184,7 @@ assets/style.css # 样式
 |------|------|------|
 | v1.0 | ✅ 已发布 | 多语言、树形导航（site.nav）、主题美化（首页聚合 + 暗色模式）、404 页、--version |
 | v1.2 | ✅ 已发布 | 标题搜索、首页卡片摘要（site.pages/nav 补 Excerpt/Date/Description）、内联 SVG favicon、主题缺失友好提示、内容宽度对齐 Docusaurus、serve 兼容 .html、build 支持 --baseUrl 覆盖 |
+| v1.3 | ✅ 已发布 | 发布时间/更新时间（front matter date/updated）、文档分页"上一篇/下一篇"修复、构建前自动清空输出目录、整体限宽统一 1320px、侧边栏缩窄至 260px 并修复展开箭头指示、上一篇/下一篇固定左右位置 |
 | v2.0 | 规划中 | 插件系统 |
 
 ---

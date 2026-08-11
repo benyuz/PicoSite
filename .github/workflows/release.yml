@@ -1,6 +1,8 @@
-﻿name: Release
+name: Release
 
 on:
+  push:
+    tags: ["v*"]
   release:
     types: [published]
 
@@ -8,7 +10,20 @@ permissions:
   contents: write
 
 jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      # 打 tag 自动创建 Release（含自动生成的发布说明）；手动发布时跳过
+      - name: Create Release
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: PicoSite ${{ github.ref_name }}
+          generate_release_notes: true
+
   publish-windows:
+    needs: create-release
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v5
@@ -37,6 +52,7 @@ jobs:
           overwrite: true
 
   publish-linux:
+    needs: create-release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -65,6 +81,7 @@ jobs:
           overwrite: true
 
   publish-macos:
+    needs: create-release
     runs-on: macos-latest
     strategy:
       matrix:
