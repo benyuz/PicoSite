@@ -1,4 +1,4 @@
 {
-  "title": "PicoSite 文档",
-  "description": "PicoSite 静态站点生成器文档"
+  "title": "PicoSite 静态站点生成器",
+  "description": "基于 .NET 10 的零配置静态站点生成器"
 }

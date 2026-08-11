@@ -1,5 +1,5 @@
 ---
-title: PicoSite Docs
+title: PicoSite Static Site Generator
 ---
 
 **Zero-config static site generator** — Write Markdown, run two commands, get a website.

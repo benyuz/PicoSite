@@ -1,5 +1,5 @@
 ---
-title: PicoSite 文档
+title: PicoSite 静态站点生成器
 ---
 
 **零配置静态站点生成器** — 写 Markdown，运行两条命令，得到一个网站。

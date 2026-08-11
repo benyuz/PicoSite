@@ -1,4 +1,4 @@
 {
-  "title": "PicoSite Docs",
-  "description": "PicoSite static site generator documentation"
+  "title": "PicoSite Static Site Generator",
+  "description": "Zero-config static site generator built on .NET 10"
 }
