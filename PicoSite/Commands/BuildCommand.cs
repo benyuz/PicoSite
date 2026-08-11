@@ -24,17 +24,24 @@ public class BuildCommand : Command
             Description = "主题目录路径（默认 exe 同目录下的 Themes/）",
         };
 
+        var baseUrlOption = new Option<string>("--baseUrl")
+        {
+            Description = "覆盖 picosite.json 的 baseUrl（GitHub Pages 项目页部署传 /仓库名/）",
+        };
+
         AddOption(outputOption);
         AddOption(themeOption);
         AddOption(themeDirOption);
+        AddOption(baseUrlOption);
 
-        this.SetHandler((string output, string theme, string themeDir) =>
+        this.SetHandler((string output, string theme, string themeDir, string baseUrl) =>
         {
             var config = configLoader.Load(Directory.GetCurrentDirectory());
             if (!string.IsNullOrEmpty(theme)) config.Theme = theme;
             if (!string.IsNullOrEmpty(output)) config.Output = output;
+            if (!string.IsNullOrEmpty(baseUrl)) config.BaseUrl = baseUrl;
             RunBuild(config, markdownParser, themeDir);
-        }, outputOption, themeOption, themeDirOption);
+        }, outputOption, themeOption, themeDirOption, baseUrlOption);
     }
 
     private static void RunBuild(SiteConfig config, MarkdownParser parser, string? themeDirOverride = null)

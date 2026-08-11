@@ -4,7 +4,7 @@ title: 主题开发
 
 主题放在 `Themes/<主题名>/`，通过 `--theme` 或 `picosite.json` 的 `theme` 字段选择。
 
-内置的 `default` 主题为 **Docusaurus 风格**：首页全宽展示站点标题、功能卡片与文档栏目聚合（无侧边栏）；文章页带侧边栏树形导航、面包屑与"编辑此页"链接。自带语言切换器、暗色模式，并针对移动端自适应。
+内置的 `default` 主题为 **Docusaurus 风格**：首页全宽展示站点标题、功能卡片与文档栏目聚合（无侧边栏）；文章页带侧边栏树形导航、面包屑与"编辑此页"链接。自带语言切换器、暗色模式、标题搜索（Ctrl+K，按当前语言全部页面标题即时过滤）、代码高亮、KaTeX 数学公式、mermaid 流程图、本页目录（TOC 滚动高亮）、上一篇/下一篇、内联 SVG favicon，并针对移动端自适应。
 
 ## 结构
 
@@ -24,8 +24,8 @@ assets/style.css # 样式
 |------|------|
 | `{{ site.title }}` | 站点标题 |
 | `{{ site.description }}` | 站点描述 |
-| `{{ site.pages }}` | 所有页面（平铺列表） |
-| `{{ site.nav }}` | 导航渲染树（嵌套，目录节点 url 为空） |
+| `{{ site.pages }}` | 所有页面（平铺列表，含 Title/Url/Excerpt/Date） |
+| `{{ site.nav }}` | 导航渲染树（嵌套，目录节点 url 为空，页面节点含 Description） |
 | `{{ site.language }}` | 当前语言代码 |
 | `{{ site.languages }}` | 所有可用语言（含名称映射） |
 | `{{ site.base_url }}` | 部署子路径（如 `/PicoSite/`） |

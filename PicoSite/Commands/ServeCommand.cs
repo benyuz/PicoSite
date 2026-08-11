@@ -57,7 +57,7 @@ public class ServeCommand : Command
             return;
         }
 
-        Console.WriteLine($"PicoSite v1.0");
+        Console.WriteLine($"PicoSite v1.2.0");
         Console.WriteLine($"源目录: {sourceDir}");
         Console.WriteLine($"主题: {config.Theme}");
         Console.WriteLine();

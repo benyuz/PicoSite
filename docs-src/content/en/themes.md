@@ -4,7 +4,7 @@ title: Theme Development
 
 Themes live in `Themes/<theme-name>/`, selected via `--theme` or the `theme` field in `picosite.json`.
 
-The built-in `default` theme is **Docusaurus-style**: the home page is full-width with the site title, feature cards and aggregated doc sections (no sidebar); article pages get a tree sidebar, breadcrumbs and an "Edit this page" link. It ships with a language switcher, dark mode and mobile-friendly layout.
+The built-in `default` theme is **Docusaurus-style**: the home page is full-width with the site title, feature cards and aggregated doc sections (no sidebar); article pages get a tree sidebar, breadcrumbs and an "Edit this page" link. It ships with a language switcher, dark mode, title search (`Ctrl+K`, live filtering across the current language's pages), code highlighting, KaTeX math, mermaid diagrams, per-page TOC with scroll-spy, prev/next page links, an inline SVG favicon and a mobile-friendly layout.
 
 ## Structure
 
@@ -24,8 +24,8 @@ assets/style.css # Styles
 |----------|-------------|
 | `{{ site.title }}` | Site title |
 | `{{ site.description }}` | Site description |
-| `{{ site.pages }}` | All pages (flat list) |
-| `{{ site.nav }}` | Navigation render tree (nested, dirs have `url = null`) |
+| `{{ site.pages }}` | All pages (flat list, with Title/Url/Excerpt/Date) |
+| `{{ site.nav }}` | Navigation render tree (nested, dirs have `url = null`, page nodes include Description) |
 | `{{ site.language }}` | Current language code |
 | `{{ site.languages }}` | All available languages (with display names) |
 | `{{ site.base_url }}` | Deploy subpath (e.g. `/PicoSite/`) |

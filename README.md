@@ -39,6 +39,7 @@ To publish, run `picosite build` — static files go to `_site/`.
 | `--theme dark` | serve, build | default |
 | `--theme-dir ./Themes/default` | serve, build | exe 同目录下 Themes/ 内的主题 |
 | `--output ./dist` | build | ./_site |
+| `--baseUrl /PicoSite/` | build | baseUrl from picosite.json |
 
 ---
 
@@ -148,13 +149,14 @@ Available template variables:
 | Variable | Description |
 |----------|-------------|
 | `{{ site.title }}` | Site title |
-| `{{ site.pages }}` | All pages (flat list) |
-| `{{ site.nav }}` | Navigation render tree (nested, dirs have `url = null`) |
+| `{{ site.pages }}` | All pages (flat list, with Title/Url/Excerpt/Date) |
+| `{{ site.nav }}` | Navigation render tree (nested, dirs have `url = null`, page nodes include Description) |
 | `{{ site.language }}` | Current language code |
 | `{{ site.languages }}` | All available languages |
 | `{{ page.title }}` | Current page title |
 | `{{ page.url }}` | Current page URL |
 | `{{ page.date }}` | Page date |
+| `{{ page.excerpt }}` | Page excerpt (from Front Matter or start of body) |
 | `{{ content }}` | Rendered HTML |
 | `{{ theme.assets }}` | Theme asset path |
 
@@ -162,7 +164,15 @@ Available template variables:
 > `{% include %}` file names need quotes: `{% include "header.html" %}`.
 
 Supports Liquid tags: `{% include %}` `{% for %}` `{% if %}`.
-The default theme supports dark mode via `prefers-color-scheme` (no JS).
+
+The default theme (Docusaurus-style) ships with:
+
+- Dark mode via `prefers-color-scheme` (no JS)
+- Title search (focus with `Ctrl+K`, live filtering of the current language's pages, match highlighting)
+- Code highlighting (highlight.js, loaded on demand) + KaTeX math + mermaid diagrams
+- Per-page TOC with scroll-spy, prev/next page links, "Edit this page" (GitHub link)
+- Single h1 per page (content no longer uses `# heading`; the template renders it once)
+- Inline SVG favicon (no external files)
 
 ---
 
@@ -177,7 +187,8 @@ The default theme supports dark mode via `prefers-color-scheme` (no JS).
 | Version | Status | What's coming |
 |---------|--------|---------------|
 | v1.0 | ✅ Released | Multi-language, auto tree nav (`site.nav`), theme polish (home aggregation + dark mode), 404 page, `--version` |
-| v1.1 | Planned | API docs generation from XML comments |
+| v1.2 | ✅ Released | Title search, homepage card excerpts (site.pages/nav gain Excerpt/Date/Description), inline SVG favicon, friendly missing-theme error, content width aligned with Docusaurus, serve accepts `.html` URLs, `--baseUrl` override for build |
+| ~~v1.1~~ | ❌ Cancelled | ~~API docs generation from XML comments~~ (PicoSite is a general-purpose docs site; XML doc generation is no longer on the roadmap) |
 | v2.0 | Planned | Plugin system |
 
 ---

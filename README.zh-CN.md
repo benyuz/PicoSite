@@ -39,6 +39,7 @@ Go、Rust 生态虽有轻量级工具，但大多沿用「配置驱动+固定主
 | `--theme dark` | serve, build | default |
 | `--theme-dir ./Themes/default` | serve, build | exe 同目录下 Themes/ 内的主题 |
 | `--output ./dist` | build | ./_site |
+| `--baseUrl /PicoSite/` | build | picosite.json 的 baseUrl |
 
 ---
 
@@ -144,13 +145,14 @@ assets/style.css # 样式
 | 变量 | 说明 |
 |------|------|
 | `{{ site.title }}` | 站点标题 |
-| `{{ site.pages }}` | 所有页面（平铺列表） |
-| `{{ site.nav }}` | 导航渲染树（嵌套结构，目录节点 url 为 null） |
+| `{{ site.pages }}` | 所有页面（平铺列表，含 Title/Url/Excerpt/Date） |
+| `{{ site.nav }}` | 导航渲染树（嵌套结构，目录节点 url 为 null，页面节点含 Description） |
 | `{{ site.language }}` | 当前语言代码 |
 | `{{ site.languages }}` | 所有可用语言 |
 | `{{ page.title }}` | 当前页面标题 |
 | `{{ page.url }}` | 当前页面 URL |
 | `{{ page.date }}` | 页面日期 |
+| `{{ page.excerpt }}` | 页面摘要（Front Matter 的 excerpt 或正文开头） |
 | `{{ content }}` | Markdown 渲染后的 HTML |
 | `{{ theme.assets }}` | 主题资源路径 |
 
@@ -158,7 +160,15 @@ assets/style.css # 样式
 > `{% include %}` 的文件名必须加引号：`{% include "header.html" %}`。
 
 支持 Liquid 标签：`{% include %}` `{% for %}` `{% if %}`。
-默认主题支持暗色模式（跟随系统 `prefers-color-scheme`，零 JS）。
+
+默认主题（基于 Docusaurus 风格）内置能力：
+
+- 暗色模式（跟随系统 `prefers-color-scheme`，零 JS）
+- 标题搜索（Ctrl+K 聚焦，输入即时过滤当前语言全部页面标题，匹配高亮）
+- 代码高亮（highlight.js，按需加载）+ KaTeX 数学公式 + mermaid 流程图
+- 本页目录（TOC，滚动跟随高亮）、上一篇/下一篇、编辑此页（GitHub 链接）
+- 页面标题唯一（内容不再写 `# 一级标题`，由模板统一渲染）
+- 内联 SVG favicon（无需外部文件）
 
 ---
 
@@ -173,7 +183,8 @@ assets/style.css # 样式
 | 版本 | 状态 | 内容 |
 |------|------|------|
 | v1.0 | ✅ 已发布 | 多语言、树形导航（site.nav）、主题美化（首页聚合 + 暗色模式）、404 页、--version |
-| v1.1 | 规划中 | XML 注释驱动的 API 文档生成 |
+| v1.2 | ✅ 已发布 | 标题搜索、首页卡片摘要（site.pages/nav 补 Excerpt/Date/Description）、内联 SVG favicon、主题缺失友好提示、内容宽度对齐 Docusaurus、serve 兼容 .html、build 支持 --baseUrl 覆盖 |
+| ~~v1.1~~ | ❌ 已取消 | ~~XML 注释驱动的 API 文档生成~~（PicoSite 定位通用文档站，XML 文档生成不再纳入路线图） |
 | v2.0 | 规划中 | 插件系统 |
 
 ---

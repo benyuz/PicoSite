@@ -17,8 +17,9 @@ picosite serve [--port 8090] [--theme default] [--theme-dir <path>]
 ## build — Generate static files
 
 ```bash
-picosite build [--output ./_site] [--theme default] [--theme-dir <path>]
+picosite build [--output ./_site] [--theme default] [--theme-dir <path>] [--baseUrl /]
 ```
 
 - `--output`: output directory, default `./_site`
+- `--baseUrl`: override the baseUrl from picosite.json (e.g. `/repo-name/` for GitHub Pages project sites)
 - Multi-language sites output one subdirectory per language: `_site/zh/`, `_site/en/`

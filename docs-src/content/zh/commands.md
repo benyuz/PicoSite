@@ -17,8 +17,9 @@ picosite serve [--port 8090] [--theme default] [--theme-dir <path>]
 ## build — 生成静态文件
 
 ```bash
-picosite build [--output ./_site] [--theme default] [--theme-dir <path>]
+picosite build [--output ./_site] [--theme default] [--theme-dir <path>] [--baseUrl /]
 ```
 
 - `--output`：输出目录，默认 `./_site`
+- `--baseUrl`：覆盖 picosite.json 的 baseUrl（如 GitHub Pages 项目页部署传 `/仓库名/`）
 - 多语言站点每语言输出一个子目录：`_site/zh/`、`_site/en/`
