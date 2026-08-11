@@ -25,7 +25,7 @@ assets/style.css # Styles
 | `{{ site.title }}` | Site title |
 | `{{ site.description }}` | Site description |
 | `{{ site.pages }}` | All pages (flat list, with Title/Url/Excerpt/Date) |
-| `{{ site.nav }}` | Navigation render tree (nested, dirs have `url = null`, page nodes include Description) |
+| `{{ site.nav }}` | Navigation render tree (nested, dirs have `url = null`, page nodes include Description, homepage excluded) |
 | `{{ site.language }}` | Current language code |
 | `{{ site.languages }}` | All available languages (with display names) |
 | `{{ site.base_url }}` | Deploy subpath (e.g. `/PicoSite/`) |

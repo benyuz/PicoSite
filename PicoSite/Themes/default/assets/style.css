@@ -393,11 +393,14 @@ kbd{background:var(--ifm-background-surface-color);border:1px solid var(--ifm-bo
 .getting-started code{display:inline-block;padding:0.5rem 1.5rem;background:var(--ifm-pre-background);color:var(--ifm-pre-color);border-radius:var(--ifm-global-radius);font-family:var(--ifm-font-family-monospace);font-size:0.85rem;margin-bottom:1rem;user-select:all}
 
 /* ===== Card Grid ===== */
-/* flex 布局：每行最多 3 个，末行卡片居中（grid 的 3+1 孤行会靠左，视觉错位） */
+/* flex 布局：每行最多 3 个，末行卡片居中（grid 的 3+1 孤行会靠左，视觉错位）；
+   卡片限宽 280px，避免内容稀少的卡片显得过宽 */
 .cards{display:flex;flex-wrap:wrap;justify-content:center;gap:1.5rem;padding:1rem 0 2rem}
-.card{flex:1 1 280px;max-width:calc(33.333% - 1rem);display:flex;flex-direction:column;background:var(--ifm-background-surface-color);border:1px solid var(--ifm-border-color);border-radius:var(--ifm-global-radius);padding:1.5rem;transition:all var(--ifm-transition-fast)}
+.card{flex:0 1 280px;max-width:280px;display:flex;flex-direction:column;background:var(--ifm-background-surface-color);border:1px solid var(--ifm-border-color);border-radius:var(--ifm-global-radius);padding:1.5rem;transition:all var(--ifm-transition-fast)}
 .card:hover{border-color:var(--ifm-color-primary);box-shadow:var(--ifm-global-shadow-md);transform:translateY(-2px)}
-.card__title{font-size:1.05rem;font-weight:700;margin-bottom:0.75rem;padding-left:0.75rem;border-left:3px solid var(--ifm-color-primary);color:var(--ifm-font-color-base)}
+.card__title{font-size:1.05rem;font-weight:700;margin-bottom:0.75rem;padding-left:0.75rem;border-left:3px solid var(--ifm-color-primary)}
+.card__title a{color:var(--ifm-font-color-base);text-decoration:none;transition:color var(--ifm-transition-fast)}
+.card__title a:hover{color:var(--ifm-color-primary)}
 .card__desc{font-size:0.85rem;color:var(--ifm-font-color-secondary);line-height:1.6;margin-bottom:0.75rem;flex:1}
 .card__list{list-style:none;padding:0.75rem 0 0;border-top:1px solid var(--ifm-border-color)}
 .card__list li{margin-bottom:0.25rem}

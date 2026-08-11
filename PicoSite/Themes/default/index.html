@@ -61,12 +61,12 @@
           {% for node in site.nav %}
           {% if node.Url != "/" %}
           <div class="card">
-            <h2 class="card__title">{{ node.Title }}</h2>
+            <h2 class="card__title"><a href="{{ site.base_url }}{{ node.Url }}">{{ node.Title }}</a></h2>
             {% if node.Description != "" %}
             <p class="card__desc">{{ node.Description }}</p>
             {% endif %}
+            {% if node.Children.size > 0 %}
             <ul class="card__list">
-              {% if node.Children.size > 0 %}
               {% for child in node.Children %}
               <li>
                 <a href="{{ site.base_url }}{{ child.Url }}">
@@ -74,14 +74,8 @@
                 </a>
               </li>
               {% endfor %}
-              {% else %}
-              <li>
-                <a href="{{ site.base_url }}{{ node.Url }}">
-                  {{ node.Title }}{% if node.Date %} &middot; {{ node.Date }}{% endif %}
-                </a>
-              </li>
-              {% endif %}
             </ul>
+            {% endif %}
           </div>
           {% endif %}
           {% endfor %}

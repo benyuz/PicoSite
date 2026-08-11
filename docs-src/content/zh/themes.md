@@ -25,7 +25,7 @@ assets/style.css # 样式
 | `{{ site.title }}` | 站点标题 |
 | `{{ site.description }}` | 站点描述 |
 | `{{ site.pages }}` | 所有页面（平铺列表，含 Title/Url/Excerpt/Date） |
-| `{{ site.nav }}` | 导航渲染树（嵌套，目录节点 url 为空，页面节点含 Description） |
+| `{{ site.nav }}` | 导航渲染树（嵌套，目录节点 url 为空，页面节点含 Description，不含首页） |
 | `{{ site.language }}` | 当前语言代码 |
 | `{{ site.languages }}` | 所有可用语言（含名称映射） |
 | `{{ site.base_url }}` | 部署子路径（如 `/PicoSite/`） |
