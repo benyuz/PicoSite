@@ -18,7 +18,6 @@
 |--------|------|
 | v1.0 | ✅ 已发布（Release `v1.0.0`，4 平台 AOT 产物） |
 | v1.2 | ✅ 已发布（标题搜索、首页摘要、favicon、--baseUrl 等） |
-| ~~v1.1~~ | ❌ 已取消：API 文档生成（PicoSite 定位通用文档站，XML 文档生成不再纳入路线图） |
 | v2.0 | 📋 规划中：插件系统 |
 
 **v1.0 完成的功能：**
@@ -80,8 +79,8 @@ Build: 每页写 HTML；Serve: 中间件按需渲染 + WebSocket 热重载
 | Release | https://github.com/benyuz/PicoSite/releases （v1.0.0 / v1.2.0 + 4 平台产物） |
 | 文档站 | https://benyuz.github.io/PicoSite/ |
 | Actions | ci（build+test）/ release（AOT 4 平台）/ docs（Pages 部署） |
-| Issues | 8 个（v1.0 已关；#23 API 文档随 v1.1 取消挂起、#24 插件挂起） |
-| Milestones | v1.0 closed / v1.1 取消 / v2.0 open |
+| Issues | 8 个（v1.0 已关；#24 插件挂起） |
+| Milestones | v1.0 closed / v2.0 open |
 
 ## 6. 关键设计决策
 
@@ -125,13 +124,11 @@ dotnet test                     # 某些会话环境可能被 hook 拦截，用 
 | 版本 | 内容 | 备注 |
 |------|------|------|
 | v1.2 | ✅ 已发布：标题搜索、首页卡片摘要（Excerpt/Date/Description）、内联 SVG favicon、主题缺失友好提示、内容宽度对齐 Docusaurus、serve 兼容 .html、build --baseUrl | 已发布 Release `v1.2.0` |
-| ~~v1.1~~ | ❌ 已取消：API 文档生成（XML 注释驱动） | PicoSite 定位通用文档站，不再做语言绑定 API 文档 |
 | v2.0 | 插件系统 | 接口设计需谨慎，独占版本 |
 
 ## 11. 遗留 / 待办
 
 - [x] v1.2：标题搜索、首页摘要、favicon、--baseUrl、主题缺失提示
-- [ ] ~~v1.1：API 文档生成（#23）~~（已取消）
 - [ ] v2.0：插件系统（#24）
 - [ ] docs-src 内容可继续扩充（命令/主题/多语言章节已有）
 - [ ] 默认语言切换器在"非语言页面"（如 blog/）上的行为可再打磨

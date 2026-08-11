@@ -188,7 +188,6 @@ The default theme (Docusaurus-style) ships with:
 |---------|--------|---------------|
 | v1.0 | ✅ Released | Multi-language, auto tree nav (`site.nav`), theme polish (home aggregation + dark mode), 404 page, `--version` |
 | v1.2 | ✅ Released | Title search, homepage card excerpts (site.pages/nav gain Excerpt/Date/Description), inline SVG favicon, friendly missing-theme error, content width aligned with Docusaurus, serve accepts `.html` URLs, `--baseUrl` override for build |
-| ~~v1.1~~ | ❌ Cancelled | ~~API docs generation from XML comments~~ (PicoSite is a general-purpose docs site; XML doc generation is no longer on the roadmap) |
 | v2.0 | Planned | Plugin system |
 
 ---
