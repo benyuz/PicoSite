@@ -209,7 +209,7 @@ public class SiteGenerator
             // 首页（/）直接挂根
             if (segments.Length == 0)
             {
-                root.Add(new NavNode { Title = page.Title, Url = page.Url, Date = page.Date });
+                root.Add(new NavNode { Title = page.Title, Url = page.Url, Date = page.Date, Description = page.Excerpt ?? "" });
                 continue;
             }
 
@@ -228,7 +228,7 @@ public class SiteGenerator
                 parent = dirNode.Children;
             }
 
-            parent.Add(new NavNode { Title = page.Title, Url = page.Url, Date = page.Date });
+            parent.Add(new NavNode { Title = page.Title, Url = page.Url, Date = page.Date, Description = page.Excerpt ?? "" });
         }
 
         return root;

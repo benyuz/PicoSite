@@ -84,7 +84,9 @@ public class TemplateEngine
             ["pages"] = site.Pages.Select(p => new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {
                 ["Title"] = p.Title,
-                ["Url"] = p.Url
+                ["Url"] = p.Url,
+                ["Excerpt"] = p.Excerpt ?? "",
+                ["Date"] = p.Date?.ToString("yyyy-MM-dd") ?? ""
             }).ToList(),
             ["nav"] = SiteGenerator.BuildNavTree(site.Pages, site.Language)
                 .Select(NavToDict).ToList()
@@ -144,6 +146,7 @@ public class TemplateEngine
                 ["feature_desc"] = "浏览 {title} 相关文档，了解详细内容和使用指南。",
                 ["switch_language"] = "切换语言",
                 ["search_placeholder"] = "搜索...",
+                ["no_results"] = "未找到相关页面",
                 ["last_updated"] = "最后更新",
                 ["edit_this_page"] = "编辑此页",
                 ["prev_page"] = "上一篇",
@@ -171,6 +174,7 @@ public class TemplateEngine
                 ["feature_desc"] = "Browse the {title} documentation for details and usage guides.",
                 ["switch_language"] = "Switch language",
                 ["search_placeholder"] = "Search...",
+                ["no_results"] = "No results found",
                 ["last_updated"] = "Last updated",
                 ["edit_this_page"] = "Edit this page",
                 ["prev_page"] = "Previous",
@@ -196,6 +200,7 @@ public class TemplateEngine
             ["Title"] = node.Title,
             ["Url"] = node.Url ?? "",
             ["Date"] = node.Date?.ToString("yyyy-MM-dd") ?? "",
+            ["Description"] = node.Description,
             ["Children"] = node.Children.Select(NavToDict).ToList()
         };
     }

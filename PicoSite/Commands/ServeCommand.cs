@@ -48,6 +48,15 @@ public class ServeCommand : Command
             ? Path.GetFullPath(themeDirOverride)
             : Path.Combine(AppContext.BaseDirectory, "Themes", config.Theme ?? "default");
 
+        if (!Directory.Exists(themeDir))
+        {
+            Console.Error.WriteLine($"[错误] 找不到主题目录: {themeDir}");
+            Console.Error.WriteLine($"提示: 主题名由 picosite.json 的 theme 字段或 --theme 参数指定，");
+            Console.Error.WriteLine($"      主题应放在 exe 同目录的 Themes/<主题名>/ 下，或用 --theme-dir 指定路径。");
+            Environment.ExitCode = 1;
+            return;
+        }
+
         Console.WriteLine($"PicoSite v1.0");
         Console.WriteLine($"源目录: {sourceDir}");
         Console.WriteLine($"主题: {config.Theme}");

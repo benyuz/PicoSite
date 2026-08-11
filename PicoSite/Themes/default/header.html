@@ -11,8 +11,9 @@
       <!-- Search Bar -->
       <div class="navbar__search">
         <svg class="navbar__search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input class="navbar__search-input" type="search" placeholder="{{ theme.i18n.search_placeholder }}" aria-label="{{ theme.i18n.search_placeholder }}">
+        <input class="navbar__search-input" type="search" placeholder="{{ theme.i18n.search_placeholder }}" aria-label="{{ theme.i18n.search_placeholder }}" autocomplete="off">
         <span class="navbar__search-kbd"><kbd>Ctrl</kbd> <kbd>K</kbd></span>
+        <div class="navbar__search-results" id="search-results" hidden></div>
       </div>
       {% if site.github != "" %}
       <a href="{{ site.github }}" class="navbar__github" target="_blank" rel="noopener" aria-label="GitHub repository">
@@ -115,6 +116,13 @@
   </div>
 </aside>
 
+<!-- 标题搜索索引（当前语言全部页面，前端即时过滤用） -->
+<ul id="search-data" hidden>
+  {% for p in site.pages %}
+  <li data-url="{{ site.base_url }}{{ p.Url }}" data-title="{{ p.Title | escape }}"></li>
+  {% endfor %}
+</ul>
+
 <script>
 (function() {
   // hideOnScroll
@@ -165,6 +173,50 @@
       if (searchInput) searchInput.focus();
     }
   });
+
+  // Title search: 索引来自当前语言全部页面（标题），输入时即时过滤
+  var searchData = [];
+  document.querySelectorAll('#search-data li').forEach(function(li) {
+    searchData.push({ title: li.getAttribute('data-title'), url: li.getAttribute('data-url') });
+  });
+  var searchResults = document.getElementById('search-results');
+  var noResultsHtml = '<div class="navbar__search-empty">{{ theme.i18n.no_results }}</div>';
+  function renderSearch(q) {
+    q = q.trim();
+    if (!q) { searchResults.hidden = true; searchResults.innerHTML = ''; return; }
+    var lower = q.toLowerCase();
+    var matched = [];
+    for (var i = 0; i < searchData.length && matched.length < 8; i++) {
+      if (searchData[i].title.toLowerCase().indexOf(lower) !== -1) matched.push(searchData[i]);
+    }
+    if (!matched.length) {
+      searchResults.innerHTML = noResultsHtml;
+    } else {
+      var html = '';
+      matched.forEach(function(m) {
+        var t = m.title;
+        var idx = t.toLowerCase().indexOf(lower);
+        var hl = idx >= 0 ? t.slice(0, idx) + '<mark>' + t.slice(idx, idx + q.length) + '</mark>' + t.slice(idx + q.length) : t;
+        html += '<a class="navbar__search-result" href="' + m.url + '"><span>' + hl + '</span></a>';
+      });
+      searchResults.innerHTML = html;
+    }
+    searchResults.hidden = false;
+  }
+  if (searchInput && searchResults) {
+    searchInput.addEventListener('input', function() { renderSearch(searchInput.value); });
+    searchInput.addEventListener('focus', function() { if (searchInput.value.trim()) renderSearch(searchInput.value); });
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') { searchInput.blur(); searchResults.hidden = true; }
+      if (e.key === 'Enter') {
+        var first = searchResults.querySelector('.navbar__search-result');
+        if (first) location.href = first.getAttribute('href');
+      }
+    });
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.navbar__search')) searchResults.hidden = true;
+    });
+  }
 
   // Language switcher dropdown
   var langBtn = document.querySelector('.navbar__language-btn');
