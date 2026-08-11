@@ -5,6 +5,7 @@ public class PageModel
     public string Title { get; set; } = "";
     public string Url { get; set; } = "";
     public DateTime? Date { get; set; }
+    public DateTime? Updated { get; set; }
     public string? Excerpt { get; set; }
     public string Content { get; set; } = "";
     public bool HasContentH1 { get; set; }

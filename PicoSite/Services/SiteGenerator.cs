@@ -313,6 +313,10 @@ public class SiteGenerator
                 && DateTime.TryParse(dateObj.ToString(), out var date))
                 page.Date = date;
 
+            if (frontMatter?.TryGetValue("updated", out var updatedObj) == true
+                && DateTime.TryParse(updatedObj.ToString(), out var updated))
+                page.Updated = updated;
+
             page.Excerpt = ExtractExcerpt(html);
             return page;
         }

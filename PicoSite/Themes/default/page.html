@@ -50,7 +50,7 @@
                 {% endunless %}
               </header>
               {% if page.date != "" %}
-              <p class="last-updated">{{ theme.i18n.last_updated }}: {{ page.date }}</p>
+              <p class="last-updated">{{ theme.i18n.published }}: {{ page.date }}{% if page.updated != "" and page.updated != page.date %} &middot; {{ theme.i18n.last_updated }}: {{ page.updated }}{% endif %}</p>
               {% endif %}
               {{ content | raw }}
             </article>
@@ -90,6 +90,8 @@
                     {% assign found_current = true %}
                   {% elsif found_current == false %}
                     {% assign prev_page = node %}
+                  {% elsif next_page == null %}
+                    {% assign next_page = node %}
                   {% endif %}
                 {% endif %}
                 {% if next_page != null %}{% break %}{% endif %}

@@ -104,6 +104,7 @@ public class TemplateEngine
             ["title"] = page.Title,
             ["url"] = page.Url,
             ["date"] = page.Date?.ToString("yyyy-MM-dd") ?? "",
+            ["updated"] = page.Updated?.ToString("yyyy-MM-dd") ?? "",
             ["excerpt"] = page.Excerpt ?? ""
         };
         // 自定义变量：front matter 中的任意字段 → {{ page.xxx }}
@@ -148,6 +149,7 @@ public class TemplateEngine
                 ["search_placeholder"] = "搜索...",
                 ["no_results"] = "未找到相关页面",
                 ["last_updated"] = "最后更新",
+                ["published"] = "发布于",
                 ["edit_this_page"] = "编辑此页",
                 ["prev_page"] = "上一篇",
                 ["next_page"] = "下一篇",
@@ -176,6 +178,7 @@ public class TemplateEngine
                 ["search_placeholder"] = "Search...",
                 ["no_results"] = "No results found",
                 ["last_updated"] = "Last updated",
+                ["published"] = "Published",
                 ["edit_this_page"] = "Edit this page",
                 ["prev_page"] = "Previous",
                 ["next_page"] = "Next",
