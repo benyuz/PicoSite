@@ -360,4 +360,42 @@ public class SiteGeneratorTests : IDisposable
         Assert.True(File.Exists(Path.Combine(outDir, "404.html")));
         Assert.Contains("<table>", File.ReadAllText(Path.Combine(outDir, "guide", "start", "index.html")));
     }
+
+    [Fact]
+    public void Build_ClearsOutputDir_RemovesStalePages()
+    {
+        var themeDir = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory, "..", "..", "..", "..",
+            "PicoSite", "Themes", "default"));
+        if (!Directory.Exists(themeDir)) return;
+
+        var buildRoot = Path.Combine(_root, "clean");
+        var src = Path.Combine(buildRoot, "content");
+        var outDir = Path.Combine(buildRoot, "_site");
+        WriteMd(Path.Combine(src, "index.md"), "---\ntitle: 首页\n---\n\n# 首页");
+        WriteMd(Path.Combine(src, "about.md"), "---\ntitle: 关于\n---\n\n# 关于");
+
+        var gen = new SiteGenerator(new MarkdownParser(), new TemplateEngine(themeDir), _config);
+        gen.Build(src, outDir);
+        Assert.True(File.Exists(Path.Combine(outDir, "about", "index.html")));
+
+        // 删除源页面后再次构建：旧输出不应残留
+        File.Delete(Path.Combine(src, "about.md"));
+        gen.Build(src, outDir);
+        Assert.False(File.Exists(Path.Combine(outDir, "about", "index.html")), "已删除页面的旧输出应被清空");
+        Assert.True(File.Exists(Path.Combine(outDir, "index.html")));
+    }
+
+    [Fact]
+    public void Build_Throws_WhenSourceInsideOutputDir()
+    {
+        var themeDir = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory, "..", "..", "..", "..",
+            "PicoSite", "Themes", "default"));
+        if (!Directory.Exists(themeDir)) return;
+
+        var gen = new SiteGenerator(new MarkdownParser(), new TemplateEngine(themeDir), _config);
+        // 输出目录为源目录本身：清空输出会误删源内容，应拒绝
+        Assert.Throws<InvalidOperationException>(() => gen.Build(_sourceDir, _sourceDir));
+    }
 }

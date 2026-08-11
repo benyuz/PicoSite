@@ -359,8 +359,10 @@ public class SiteGenerator
     private static bool IsInside(string file, string dir)
     {
         var fileFull = Path.GetFullPath(file);
-        var dirFull = Path.GetFullPath(dir) + Path.DirectorySeparatorChar;
-        return fileFull.StartsWith(dirFull, StringComparison.Ordinal);
+        var dirFull = Path.GetFullPath(dir);
+        // 相等路径（如源目录 == 输出目录）也视为"内部"，避免清空输出时误删源内容
+        return fileFull.Equals(dirFull, StringComparison.Ordinal)
+            || fileFull.StartsWith(dirFull + Path.DirectorySeparatorChar, StringComparison.Ordinal);
     }
 
     // ─── Build 模式 ──────────────────────────────────────────
@@ -372,6 +374,22 @@ public class SiteGenerator
         var defaultLang = !string.IsNullOrEmpty(_config.DefaultLanguage)
             ? _config.DefaultLanguage
             : languages.FirstOrDefault() ?? "";
+
+        // 输出目录不能包含源目录（清空输出时会误删源内容）
+        if (Path.IsPathRooted(sourceDir) && IsInside(sourceDir, outputDir))
+            throw new InvalidOperationException("输出目录不能包含源目录");
+
+        // 构建前清空输出目录，避免旧内容残留（如已删除页面的旧文件）
+        if (Directory.Exists(outputDir))
+        {
+            foreach (var entry in Directory.EnumerateFileSystemEntries(outputDir))
+            {
+                if (Directory.Exists(entry))
+                    Directory.Delete(entry, true);
+                else
+                    File.Delete(entry);
+            }
+        }
 
         Directory.CreateDirectory(outputDir);
 

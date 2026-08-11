@@ -393,9 +393,9 @@ kbd{background:var(--ifm-background-surface-color);border:1px solid var(--ifm-bo
 .getting-started code{display:inline-block;padding:0.5rem 1.5rem;background:var(--ifm-pre-background);color:var(--ifm-pre-color);border-radius:var(--ifm-global-radius);font-family:var(--ifm-font-family-monospace);font-size:0.85rem;margin-bottom:1rem;user-select:all}
 
 /* ===== Card Grid ===== */
-/* 卡片行限宽与首页正文一致（1140px），整体跟随网页宽度；
+/* 卡片行继承首页容器限宽（--ifm-container-width-xl 1320px，与 navbar/footer 一致）；
    4 列弹性布局：满行卡片均匀撑满，末行居中（grid 的孤行靠左会错位） */
-.cards{display:flex;flex-wrap:wrap;justify-content:center;gap:1.5rem;padding:1rem 0 2rem;max-width:1140px;margin:0 auto}
+.cards{display:flex;flex-wrap:wrap;justify-content:center;gap:1.5rem;padding:1rem 0 2rem}
 .card{flex:1 1 250px;max-width:calc(25% - 1.125rem);display:flex;flex-direction:column;background:var(--ifm-background-surface-color);border:1px solid var(--ifm-border-color);border-radius:var(--ifm-global-radius);padding:1.5rem;transition:all var(--ifm-transition-fast)}
 .card:hover{border-color:var(--ifm-color-primary);box-shadow:var(--ifm-global-shadow-md);transform:translateY(-2px)}
 .card__title{font-size:1.05rem;font-weight:700;margin-bottom:0.75rem;padding-left:0.75rem;border-left:3px solid var(--ifm-color-primary)}
