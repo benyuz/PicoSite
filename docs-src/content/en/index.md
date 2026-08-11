@@ -4,11 +4,14 @@ title: PicoSite Static Site Generator
 
 **Zero-config static site generator** — Write Markdown, run two commands, get a website.
 
-- Lightweight, AOT-compiled to a ~10MB single file, no runtime dependencies
-- Markdown + YAML Front Matter content
-- Liquid template engine with a theme system
-- Auto-detected language directories, built-in multi-language support
-- Hot-reload dev experience, one-command static generation
+Why PicoSite:
+
+- **Lightweight**: AOT-compiled to a ~10MB single file, zero runtime dependencies
+- **Fast**: near-instant builds and hot-reload live preview
+- **Zero-config**: no setup files, two commands to start
+- **Multi-language**: auto-detected language directories, built-in i18n support
+- **Themable**: Liquid template engine, fully customizable
+- **Cross-platform**: single-file distribution for Windows / Linux / macOS
 
 ## Quick Start
 
