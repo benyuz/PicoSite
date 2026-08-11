@@ -206,12 +206,11 @@ public class SiteGenerator
 
             var segments = url.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
-            // 首页（/）直接挂根
+            // 首页（/）不加入导航树：站点首页由主题品牌链接承担，
+            // 且语言模式下 index 的原始 URL 带语言前缀（/en/），
+            // 混入导航会造成中英文导航/卡片不一致
             if (segments.Length == 0)
-            {
-                root.Add(new NavNode { Title = page.Title, Url = page.Url, Date = page.Date, Description = page.Excerpt ?? "" });
                 continue;
-            }
 
             // 逐级定位/创建目录节点
             var parent = root;

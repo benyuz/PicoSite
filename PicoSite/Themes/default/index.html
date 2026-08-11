@@ -62,6 +62,9 @@
           {% if node.Url != "/" %}
           <div class="card">
             <h2 class="card__title">{{ node.Title }}</h2>
+            {% if node.Description != "" %}
+            <p class="card__desc">{{ node.Description }}</p>
+            {% endif %}
             <ul class="card__list">
               {% if node.Children.size > 0 %}
               {% for child in node.Children %}

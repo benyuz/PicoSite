@@ -123,9 +123,10 @@ public class SiteGeneratorTests : IDisposable
 
         var nav = SiteGenerator.BuildNavTree(pages);
 
-        Assert.Equal(2, nav.Count);
-        Assert.Equal("/", nav[0].Url);
-        Assert.Equal("关于", nav[1].Title);
+        // 首页（/）不进导航树：站点首页由品牌链接承担
+        Assert.Single(nav);
+        Assert.Equal("关于", nav[0].Title);
+        Assert.Equal("/about", nav[0].Url);
         Assert.Empty(nav[0].Children);
     }
 
@@ -142,11 +143,10 @@ public class SiteGeneratorTests : IDisposable
 
         var nav = SiteGenerator.BuildNavTree(pages);
 
-        // 按 URL 字典序：/、/about、/blog/* —— 顶层为 首页、关于、blog 目录
-        Assert.Equal(3, nav.Count);
-        Assert.Equal("/", nav[0].Url);
-        Assert.Equal("关于", nav[1].Title);
-        var blog = nav[2];
+        // 按 URL 字典序：/about、/blog/* —— 顶层为 关于、blog 目录（首页不进导航树）
+        Assert.Equal(2, nav.Count);
+        Assert.Equal("关于", nav[0].Title);
+        var blog = nav[1];
         Assert.Equal("blog", blog.Title);
         Assert.Null(blog.Url); // 目录节点
         Assert.Equal(2, blog.Children.Count);
@@ -161,10 +161,10 @@ public class SiteGeneratorTests : IDisposable
 
         var nav = SiteGenerator.BuildNavTree(pages, "en");
 
-        // 剥离 /en 前缀后：根层级直接是 首页 + about，没有 en 目录节点
-        Assert.Equal(2, nav.Count);
-        Assert.Contains(nav, n => n.Url == "/en/");
+        // 剥离 /en 前缀后：根层级直接是 about，没有 en 目录节点；首页 /en/ 不进导航树
+        Assert.Single(nav);
         Assert.Contains(nav, n => n.Url == "/en/about");
+        Assert.DoesNotContain(nav, n => n.Url == "/en/");
         Assert.DoesNotContain(nav, n => n.Url is null); // 无目录节点
     }
 
