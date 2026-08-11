@@ -20,6 +20,7 @@ Add YAML Front Matter at the top:
 ---
 title: My Article
 date: 2026-06-09
+updated: 2026-07-01
 ---
 
 ## Body
@@ -27,7 +28,7 @@ date: 2026-06-09
 Write **Markdown** here.
 ```
 
-Supported fields: `title`, `date`, plus any custom fields. Custom fields are available in theme templates via `{{ page.fieldName }}` (see "Dynamic variables" in [Theme Development](./themes.html)).
+Supported fields: `title`, `date`, `updated`, plus any custom fields. `date` is the publish date, and `updated` (optional) is the last-update date; both are shown at the top of the page, and `updated` is omitted automatically when it equals `date`. Custom fields are available in theme templates via `{{ page.fieldName }}` (see "Dynamic variables" in [Theme Development](./themes.html)).
 
 ## Formulas and Diagrams
 

@@ -20,6 +20,7 @@ content/blog/post.md  → /blog/post
 ---
 title: 文章标题
 date: 2026-06-09
+updated: 2026-07-01
 ---
 
 ## 正文
@@ -27,7 +28,7 @@ date: 2026-06-09
 支持 **Markdown** 语法。
 ```
 
-支持字段：`title`、`date`，以及任意自定义字段。自定义字段可在主题模板中通过 `{{ page.字段名 }}` 访问（详见[主题开发](./themes.html)的"动态变量"）。
+支持字段：`title`、`date`、`updated`，以及任意自定义字段。`date` 为发布时间，`updated` 为更新时间（可选），两者会显示在文章顶部；`updated` 与 `date` 相同时会自动省略。自定义字段可在主题模板中通过 `{{ page.字段名 }}` 访问（详见[主题开发](./themes.html)的"动态变量"）。
 
 ## 公式与图表
 
