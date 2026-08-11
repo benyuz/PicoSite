@@ -6,12 +6,12 @@ title: PicoSite Static Site Generator
 
 Why PicoSite:
 
-- **Lightweight**: AOT-compiled to a ~10MB single file, zero runtime dependencies
-- **Fast**: near-instant builds and hot-reload live preview
-- **Zero-config**: no setup files, two commands to start
-- **Multi-language**: auto-detected language directories, built-in i18n support
-- **Themable**: Liquid template engine, fully customizable
-- **Cross-platform**: single-file distribution for Windows / Linux / macOS
+- **Zero-dependency**: no Node.js / Ruby / Python required — a single file, ready to run
+- **Lightweight**: ~10MB AOT binary, far lighter than similar tools
+- **Zero-config**: no scaffolding or config files — two commands to launch
+- **Fast**: near-instant builds with hot-reload live preview
+- **Multi-language**: auto-detected language directories, built-in i18n
+- **Rich docs**: syntax highlighting, math, diagrams and site search out of the box
 
 ## Quick Start
 
