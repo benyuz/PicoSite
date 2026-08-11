@@ -314,7 +314,7 @@ kbd{background:var(--ifm-background-surface-color);border:1px solid var(--ifm-bo
 
 /* ===== Layout ===== */
 .docPage{display:flex;max-width:var(--ifm-container-width-xl);margin:0 auto;min-height:calc(100vh - var(--ifm-navbar-height))}
-.docPage--home{display:block;max-width:none;padding:0 var(--ifm-spacing-horizontal)}
+.docPage--home{display:block;max-width:var(--ifm-container-width-xl);margin:0 auto;padding:0 var(--ifm-spacing-horizontal)}
 .docPage--home .docItemContainer{max-width:none}
 .docSidebarContainer{display:none;width:var(--doc-sidebar-width);flex-shrink:0;border-right:1px solid var(--ifm-border-color)}
 @media(min-width:997px){.docSidebarContainer{display:block}}
@@ -393,10 +393,10 @@ kbd{background:var(--ifm-background-surface-color);border:1px solid var(--ifm-bo
 .getting-started code{display:inline-block;padding:0.5rem 1.5rem;background:var(--ifm-pre-background);color:var(--ifm-pre-color);border-radius:var(--ifm-global-radius);font-family:var(--ifm-font-family-monospace);font-size:0.85rem;margin-bottom:1rem;user-select:all}
 
 /* ===== Card Grid ===== */
-/* flex 布局：每行最多 3 个，末行卡片居中（grid 的 3+1 孤行会靠左，视觉错位）；
-   卡片限宽 280px，避免内容稀少的卡片显得过宽 */
-.cards{display:flex;flex-wrap:wrap;justify-content:center;gap:1.5rem;padding:1rem 0 2rem}
-.card{flex:0 1 280px;max-width:280px;display:flex;flex-direction:column;background:var(--ifm-background-surface-color);border:1px solid var(--ifm-border-color);border-radius:var(--ifm-global-radius);padding:1.5rem;transition:all var(--ifm-transition-fast)}
+/* 卡片行限宽与首页正文一致（1140px），整体跟随网页宽度；
+   4 列弹性布局：满行卡片均匀撑满，末行居中（grid 的孤行靠左会错位） */
+.cards{display:flex;flex-wrap:wrap;justify-content:center;gap:1.5rem;padding:1rem 0 2rem;max-width:1140px;margin:0 auto}
+.card{flex:1 1 250px;max-width:calc(25% - 1.125rem);display:flex;flex-direction:column;background:var(--ifm-background-surface-color);border:1px solid var(--ifm-border-color);border-radius:var(--ifm-global-radius);padding:1.5rem;transition:all var(--ifm-transition-fast)}
 .card:hover{border-color:var(--ifm-color-primary);box-shadow:var(--ifm-global-shadow-md);transform:translateY(-2px)}
 .card__title{font-size:1.05rem;font-weight:700;margin-bottom:0.75rem;padding-left:0.75rem;border-left:3px solid var(--ifm-color-primary)}
 .card__title a{color:var(--ifm-font-color-base);text-decoration:none;transition:color var(--ifm-transition-fast)}
