@@ -1,29 +1,57 @@
-﻿<aside class="sidebar">
-    <div class="sidebar-title">{{ theme.i18n.nav }}</div>
-    <ul class="nav-tree">
-        {% for node in site.nav %}
-            {% if node.Children.size > 0 %}
-                <li class="nav-dir">
-                    <span class="nav-dir-title">{{ node.Title }}</span>
-                    <ul class="nav-children">
-                        {% for child in node.Children %}
-                            <li>
-                                <a href="{{ site.base_url }}{{ child.Url }}"
-                                   {% if child.Url == current_url %}class="active"{% endif %}>
-                                    {{ child.Title }}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            {% else %}
-                <li>
-                    <a href="{{ site.base_url }}{{ node.Url }}"
-                       {% if node.Url == current_url %}class="active"{% endif %}>
-                        {{ node.Title }}
-                    </a>
-                </li>
-            {% endif %}
-        {% endfor %}
+<aside class="docSidebarContainer">
+  <div class="theme-doc-sidebar-menu menu">
+    <ul class="menu__list">
+      {% for node in site.nav %}
+      {% if node.Children.size > 0 %}
+      <li class="menu__list-item">
+        <span class="menu__link menu__link--sublist" onclick="this.parentElement.classList.toggle('menu__list-item--collapsed')">
+          {{ node.Title }}
+        </span>
+        <ul class="menu__list">
+          {% for child in node.Children %}
+          <li class="menu__list-item">
+            <a href="{{ site.base_url }}{{ child.Url }}"
+               class="menu__link {% if child.Url == current_url %}menu__link--active{% endif %}">
+              {{ child.Title }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </li>
+      {% else %}
+      <li class="menu__list-item">
+        <a href="{{ site.base_url }}{{ node.Url }}"
+           class="menu__link {% if node.Url == current_url %}menu__link--active{% endif %}">
+          {{ node.Title }}
+        </a>
+      </li>
+      {% endif %}
+      {% endfor %}
     </ul>
+  </div>
 </aside>
+
+<script>
+(function() {
+  // Auto-expand the current section in the sidebar
+  var activeLink = document.querySelector('.menu__link--active');
+  if (activeLink) {
+    // Walk up to find the parent menu__list-item and ensure it's not collapsed
+    var parent = activeLink.closest('.menu__list');
+    if (parent) {
+      var parentItem = parent.closest('.menu__list-item');
+      if (parentItem) {
+        parentItem.classList.remove('menu__list-item--collapsed');
+        // Also expand grandparent if exists
+        var grandparent = parentItem.closest('.menu__list');
+        if (grandparent) {
+          var gpItem = grandparent.closest('.menu__list-item');
+          if (gpItem) {
+            gpItem.classList.remove('menu__list-item--collapsed');
+          }
+        }
+      }
+    }
+  }
+})();
+</script>

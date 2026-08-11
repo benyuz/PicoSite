@@ -1,10 +1,18 @@
 using Markdig;
+using Markdig.Extensions.EmphasisExtras;
 
 namespace PicoSite.Services;
 
 public class MarkdownParser
 {
-    private readonly MarkdownPipeline _pipeline = new MarkdownPipelineBuilder().Build();
+    private readonly MarkdownPipeline _pipeline = new MarkdownPipelineBuilder()
+        .UsePipeTables()
+        .UseAutoLinks()
+        .UseMathematics()   // 公式: $x^2$ / $$...$$（前端由 KaTeX 渲染）
+        .UseTaskLists()     // GFM 任务列表: - [x] 已完成
+        .UseEmphasisExtras(EmphasisExtraOptions.Strikethrough) // 删除线: ~~文本~~
+        .UseEmojiAndSmiley() // emoji: :smile:
+        .Build();
 
     public (Dictionary<string, object>? FrontMatter, string Html) Parse(string markdown)
     {

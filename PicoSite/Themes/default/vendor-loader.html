@@ -1,0 +1,69 @@
+<script>
+(function() {
+  // ===== 按需加载扩展渲染器（KaTeX 公式 / mermaid 图表与脑图）=====
+  // 页面没有对应内容时不加载任何脚本；资源随主题本地分发（assets/vendor），离线可用
+  var base = '{{ site.base_url }}{{ theme.assets }}/vendor';
+  function loadScript(src, cb) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.onload = function() { if (cb) cb(); };
+    s.onerror = function() { console.error('[PicoSite] 资源加载失败: ' + src); };
+    document.head.appendChild(s);
+  }
+  function loadCss(href) {
+    var l = document.createElement('link');
+    l.rel = 'stylesheet';
+    l.href = href;
+    l.onerror = function() { console.error('[PicoSite] 资源加载失败: ' + href); };
+    document.head.appendChild(l);
+  }
+
+  // 公式：存在 .math 元素（Markdig UseMathematics 输出）才加载 KaTeX
+  if (document.querySelector('.math')) {
+    loadCss(base + '/katex/katex.min.css');
+    loadScript(base + '/katex/katex.min.js', function() {
+      loadScript(base + '/katex/auto-render.min.js', function() {
+        if (window.renderMathInElement) {
+          renderMathInElement(document.body, {
+            delimiters: [
+              { left: '\\(', right: '\\)', display: false },
+              { left: '\\[', right: '\\]', display: true }
+            ],
+            throwOnError: false
+          });
+        } else {
+          console.error('[PicoSite] KaTeX auto-render 加载失败');
+        }
+      });
+    });
+  }
+
+  // 代码高亮：存在非 mermaid/mindmap 的代码块才加载 highlight.js
+  if (document.querySelector('pre code:not(.language-mermaid):not(.language-mindmap)')) {
+    loadCss(base + '/highlight/github-dark.min.css');
+    loadScript(base + '/highlight/highlight.min.js', function() {
+      if (window.hljs) {
+        document.querySelectorAll('pre code:not(.language-mermaid):not(.language-mindmap)').forEach(function(el) {
+          hljs.highlightElement(el);
+        });
+      } else {
+        console.error('[PicoSite] highlight.js 加载失败');
+      }
+    });
+  }
+
+  // 图表/脑图：存在 ```mermaid / ```mindmap 代码块才加载 mermaid
+  if (document.querySelector('pre code.language-mermaid, pre code.language-mindmap')) {
+    loadScript(base + '/mermaid/mermaid.min.js', function() {
+      if (window.mermaid) {
+        mermaid.initialize({ startOnLoad: false, theme: 'default' });
+        mermaid.run({ querySelector: ['pre code.language-mermaid', 'pre code.language-mindmap'] }).catch(function(err) {
+          console.error('[PicoSite] mermaid 渲染失败:', err);
+        });
+      } else {
+        console.error('[PicoSite] mermaid 加载失败');
+      }
+    });
+  }
+})();
+</script>

@@ -1,59 +1,125 @@
-﻿<!DOCTYPE html>
-<html lang="zh-CN">
+<!DOCTYPE html>
+<html lang="{{ site.language | default: "zh" }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ site.title }} - {{ site.description }}</title>
-    <meta name="description" content="{{ site.description }}">
-    <link rel="stylesheet" href="{{ site.base_url }}{{ theme.assets }}/style.css">
-    <script>try{var t=localStorage.getItem('picosite-theme');if(!t&&matchMedia('(prefers-color-scheme: dark)').matches)t='dark';if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ site.title }}</title>
+  <meta name="description" content="{{ site.description }}">
+  <meta property="og:title" content="{{ site.title }}">
+  <meta property="og:description" content="{{ site.description }}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ site.base_url }}/">
+  <meta property="og:site_name" content="{{ site.title }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ site.title }}">
+  <meta name="twitter:description" content="{{ site.description }}">
+  <link rel="canonical" href="{{ site.base_url }}/">
+  <link rel="stylesheet" href="{{ site.base_url }}{{ theme.assets }}/style.css">
+  <script>try{var t=localStorage.getItem('picosite-theme');if(!t&&matchMedia('(prefers-color-scheme: dark)').matches)t='dark';if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"{{ site.title }}","description":"{{ site.description }}","url":"{{ site.base_url }}/"}</script>
 </head>
 <body>
-    {% include "header.html" %}
+  {% include "header.html" %}
 
-    <div class="layout">
-        {% include "sidebar.html" %}
+  {% assign first_doc = null %}
+  {% for node in site.nav %}
+    {% if first_doc == null and node.Children.size > 0 %}
+      {% assign first_doc = node.Children | first %}
+    {% endif %}
+    {% if first_doc == null and node.Url != "" and node.Url != "/" %}
+      {% assign first_doc = node %}
+    {% endif %}
+  {% endfor %}
 
-        <main class="main">
-            <div class="doc">
-                <!-- Hero：index.md 正文（大标题 + 副标题）+ 操作按钮 -->
-                {% if content %}
-                    <section class="hero">
-                        {{ content | raw }}
-                        <div class="hero-actions">
-                            {% if site.github != "" %}
-                                <a class="btn btn-primary" href="{{ site.github }}" target="_blank" rel="noopener">GitHub</a>
-                            {% endif %}
-                            <a class="btn btn-ghost" href="#sections">{{ theme.i18n.browse_docs }}</a>
-                        </div>
-                    </section>
-                {% endif %}
+  <div class="docPage docPage--home">
+    <main class="docMainContainer">
+      <div class="docItemContainer">
+        <!-- Hero -->
+        <section class="hero">
+          <h1 class="hero__title">{{ site.title }}</h1>
+          <p class="hero__subtitle">{{ site.description }}</p>
+          <div class="hero__actions">
+            {% if site.github != "" %}
+            <a class="button button--primary" href="{{ site.github }}" target="_blank" rel="noopener">GitHub</a>
+            {% endif %}
+            <a class="button button--outline" href="{{ site.base_url }}{% if first_doc %}{{ first_doc.Url }}{% else %}/{% endif %}">{{ theme.i18n.browse_docs }}</a>
+          </div>
+        </section>
 
-                <!-- 栏目卡片：目录节点 → 卡片网格 -->
-                {% if site.nav.size > 0 %}
-                    <section id="sections" class="cards">
-                        {% for node in site.nav %}
-                            {% if node.Children.size > 0 %}
-                                <div class="card">
-                                    <h2>{{ node.Title }}</h2>
-                                    <ul>
-                                        {% for child in node.Children %}
-                                            <li>
-                                                <a href="{{ site.base_url }}{{ child.Url }}">
-                                                    {{ child.Title }}{% if child.Date %} · {{ child.Date }}{% endif %}
-                                                </a>
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </section>
-                {% endif %}
+        <!-- Feature Cards (3-column) -->
+        <div class="features">
+          {% assign feature_count = 0 %}
+          {% for node in site.nav limit:6 %}
+          {% if node.Url != "/" %}
+          <div class="feature-card">
+            <div class="feature-card__icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                {% if feature_count == 0 %}<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>{% endif %}
+                {% if feature_count == 1 %}<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>{% endif %}
+                {% if feature_count == 2 %}<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>{% endif %}
+                {% if feature_count == 3 %}<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>{% endif %}
+                {% if feature_count == 4 %}<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>{% endif %}
+                {% if feature_count == 5 %}<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>{% endif %}
+              </svg>
             </div>
-        </main>
-    </div>
+            <h3 class="feature-card__title">{{ node.Title }}</h3>
+            <p class="feature-card__desc">{% if node.Description %}{{ node.Description }}{% else %}{{ theme.i18n.feature_desc | replace: "{title}", node.Title }}{% endif %}</p>
+          </div>
+          {% assign feature_count = feature_count | plus: 1 %}
+          {% endif %}
+          {% endfor %}
+        </div>
 
-    {% include "footer.html" %}
+        <!-- Getting Started（配置 site.command 后显示，支持任意命令） -->
+        {% if site.command != "" %}
+        <div class="getting-started">
+          <h2>{{ theme.i18n.getting_started }}</h2>
+          <p>{{ theme.i18n.getting_started_desc }}</p>
+          <code>{{ site.command }}</code>
+          <p><a href="{{ site.base_url }}{% if first_doc %}{{ first_doc.Url }}{% else %}/{% endif %}" style="font-weight:600">{{ theme.i18n.browse_docs }} &rarr;</a></p>
+        </div>
+        {% endif %}
+
+        <!-- Document Sections -->
+        <section id="sections" class="cards">
+          {% for node in site.nav %}
+          {% if node.Url != "/" %}
+          <div class="card">
+            <h2 class="card__title">{{ node.Title }}</h2>
+            <ul class="card__list">
+              {% if node.Children.size > 0 %}
+              {% for child in node.Children %}
+              <li>
+                <a href="{{ site.base_url }}{{ child.Url }}">
+                  {{ child.Title }}{% if child.Date %} &middot; {{ child.Date }}{% endif %}
+                </a>
+              </li>
+              {% endfor %}
+              {% else %}
+              <li>
+                <a href="{{ site.base_url }}{{ node.Url }}">
+                  {{ node.Title }}{% if node.Date %} &middot; {{ node.Date }}{% endif %}
+                </a>
+              </li>
+              {% endif %}
+            </ul>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </section>
+
+        <!-- Homepage content: content/index.md 的正文渲染区 -->
+        {% if content != "" %}
+        <section class="markdown home-content">
+          {{ content | raw }}
+        </section>
+        {% endif %}
+      </div>
+    </main>
+  </div>
+
+  {% include "vendor-loader.html" %}
+
+  {% include "footer.html" %}
 </body>
 </html>

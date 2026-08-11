@@ -52,4 +52,87 @@ public class MarkdownParserTests
         Assert.Equal("无日期", frontMatter!["title"]?.ToString());
         Assert.DoesNotContain("date", frontMatter!.Keys);
     }
+
+    [Fact]
+    public void Parse_PipeTable_RendersHtmlTable()
+    {
+        var md = "| 名称 | 说明 |\n| --- | --- |\n| PicoSite | 静态站点生成器 |";
+
+        var (_, html) = _parser.Parse(md);
+
+        Assert.Contains("<table>", html);
+        Assert.Contains("<thead>", html);
+        Assert.Contains("<tbody>", html);
+        Assert.Contains("<td>PicoSite</td>", html);
+        Assert.Contains("<td>静态站点生成器</td>", html);
+    }
+
+    [Fact]
+    public void Parse_AutoLink_RendersAnchor()
+    {
+        var md = "官网： https://github.com/benyuz/PicoSite";
+
+        var (_, html) = _parser.Parse(md);
+
+        Assert.Contains("<a href=\"https://github.com/benyuz/PicoSite\">", html);
+    }
+
+    // ─── 公式 / 任务列表 / 删除线 / emoji / mermaid ──────────
+
+    [Fact]
+    public void Parse_InlineMath_RendersMathSpan()
+    {
+        var (_, html) = _parser.Parse("质能方程 $E=mc^2$ 是著名的公式。");
+
+        Assert.Contains("class=\"math\"", html);
+        Assert.Contains("E=mc^2", html);
+    }
+
+    [Fact]
+    public void Parse_BlockMath_RendersMathBlock()
+    {
+        var (_, html) = _parser.Parse("$$\n\\int_0^1 x^2 dx\n$$");
+
+        Assert.Contains("<div class=\"math\">", html);
+        Assert.Contains("\\int_0^1", html);
+    }
+
+    [Fact]
+    public void Parse_TaskList_RendersCheckboxes()
+    {
+        var md = "- [x] 已完成任务\n- [ ] 未完成任务";
+
+        var (_, html) = _parser.Parse(md);
+
+        Assert.Contains("task-list-item", html);
+        Assert.Contains("<input", html);
+        Assert.Contains("checked", html);
+    }
+
+    [Fact]
+    public void Parse_Strikethrough_RendersDel()
+    {
+        var (_, html) = _parser.Parse("这是 ~~删除~~ 的内容");
+
+        Assert.Contains("<del>删除</del>", html);
+    }
+
+    [Fact]
+    public void Parse_MermaidFence_KeepsLanguageClass()
+    {
+        var md = "```mermaid\nmindmap\n  root((PicoSite))\n    SSG\n```";
+
+        var (_, html) = _parser.Parse(md);
+
+        Assert.Contains("language-mermaid", html);
+        Assert.Contains("mindmap", html);
+    }
+
+    [Fact]
+    public void Parse_EmojiShortcut_RendersEmoji()
+    {
+        var (_, html) = _parser.Parse("欢迎 :smile:");
+
+        Assert.Contains("😄", html);
+    }
 }

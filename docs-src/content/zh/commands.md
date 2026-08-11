@@ -2,13 +2,13 @@
 title: 命令参考
 ---
 
-# 命令参考
-
 ## serve — 启动预览服务器
 
 ```bash
 picosite serve [--port 8090] [--theme default] [--theme-dir <path>]
 ```
+
+**不带任何参数直接运行 `picosite` 等同于 `picosite serve`**（Windows / Linux / macOS 行为一致），方便快速预览。
 
 - `--port`：预览端口，默认 8090
 - `--theme`：主题名

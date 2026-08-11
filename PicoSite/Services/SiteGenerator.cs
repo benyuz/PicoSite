@@ -90,13 +90,13 @@ public class SiteGenerator
 
     /// <summary>
     /// 读取语言目录下的 site.json（可选，覆盖该语言的站点级配置）。
-    /// 当前只支持 title/description 按语言区分。
+    /// 返回该语言的标题、描述及自定义变量（Extra 字段）。
     /// </summary>
-    public (string? Title, string? Description) LoadLanguageSite(string sourceDir, string? language)
+    public (string? Title, string? Description, Dictionary<string, object>? Extra) LoadLanguageSite(string sourceDir, string? language)
     {
-        if (language is null) return (null, null);
+        if (language is null) return (null, null, null);
         var path = Path.Combine(sourceDir, language, "site.json");
-        if (!File.Exists(path)) return (null, null);
+        if (!File.Exists(path)) return (null, null, null);
 
         try
         {
@@ -104,14 +104,51 @@ public class SiteGenerator
             // 用源码生成 context（项目禁用 JSON 反射，AOT 兼容）
             var cfg = System.Text.Json.JsonSerializer.Deserialize(
                 json, PicoSiteJsonContext.Default.SiteConfig);
-            return (cfg?.Title, cfg?.Description);
+            return (cfg?.Title, cfg?.Description,
+                cfg?.Extra is null ? null : JsonElementToObject(cfg.Extra));
         }
         catch (Exception ex)
         {
             Console.Error.WriteLine($"[警告] 无法解析语言配置 {path}: {ex.Message}");
-            return (null, null);
+            return (null, null, null);
         }
     }
+
+    /// <summary>合并站点级与语言级自定义变量（语言级优先，内置键不会被覆盖）。</summary>
+    private Dictionary<string, object> MergeVariables(Dictionary<string, object>? langExtra)
+    {
+        var vars = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        if (_config.Extra is not null)
+            foreach (var kv in _config.Extra)
+                vars[kv.Key] = JsonElementToObject(kv.Value);
+        if (langExtra is not null)
+            foreach (var kv in langExtra)
+                vars[kv.Key] = kv.Value;
+        return vars;
+    }
+
+    /// <summary>JSON 对象转模板可用字典。</summary>
+    public static Dictionary<string, object> JsonElementToObject(Dictionary<string, System.Text.Json.JsonElement> dict) =>
+        dict.ToDictionary(kv => kv.Key, kv => JsonElementToObject(kv.Value),
+            StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>JSON 元素转模板可用对象（简单类型/数组/嵌套对象）。</summary>
+    public static object JsonElementToObject(System.Text.Json.JsonElement e) => e.ValueKind switch
+    {
+        System.Text.Json.JsonValueKind.String => e.GetString() ?? "",
+        System.Text.Json.JsonValueKind.True => true,
+        System.Text.Json.JsonValueKind.False => false,
+        System.Text.Json.JsonValueKind.Number =>
+            // 注意：long 与 double 之间 long 会隐式转换为 double，
+            // 必须显式装箱 (object)l 保持整数类型，否则条件表达式结果被提升为 double
+            e.TryGetInt64(out var l) ? (object)l : e.GetDouble(),
+        System.Text.Json.JsonValueKind.Array =>
+            e.EnumerateArray().Select(JsonElementToObject).ToList(),
+        System.Text.Json.JsonValueKind.Object =>
+            e.EnumerateObject().ToDictionary(p => p.Name, p => JsonElementToObject(p.Value),
+                StringComparer.OrdinalIgnoreCase),
+        _ => e.ToString()
+    };
 
     /// <summary>
     /// 加载页面。
@@ -268,6 +305,7 @@ public class SiteGenerator
                          ?? Path.GetFileNameWithoutExtension(filePath),
                 Url = url,
                 Content = html,
+                HasContentH1 = html.TrimStart().StartsWith("<h1", StringComparison.OrdinalIgnoreCase),
                 SourcePath = filePath,
                 FrontMatter = frontMatter,
             };
@@ -349,6 +387,7 @@ public class SiteGenerator
                 Github = _config.Github,
                 Email = _config.Email,
                 Pages = rootPages,
+                Variables = MergeVariables(null),
             };
 
             foreach (var page in rootPages)
@@ -364,7 +403,7 @@ public class SiteGenerator
             Directory.CreateDirectory(langOutput);
 
             // 语言级站点配置（site.json 覆盖 title/description）
-            var (langTitle, langDesc) = LoadLanguageSite(sourceDir, lang);
+            var (langTitle, langDesc, langExtra) = LoadLanguageSite(sourceDir, lang);
 
             var pages = LoadPages(sourceDir, lang);
             var site = new SiteModel
@@ -378,6 +417,7 @@ public class SiteGenerator
                 Github = _config.Github,
                 Email = _config.Email,
                 Pages = pages,
+                Variables = MergeVariables(langExtra),
             };
 
             foreach (var page in pages)
@@ -389,8 +429,11 @@ public class SiteGenerator
         // 404 页：渲染主题 404.html 到输出根（GitHub Pages 等项目站需要根级 404.html）
         if (File.Exists(Path.Combine(_templates.ThemeDir, "404.html")))
         {
-            var pages404 = LoadPages(sourceDir, defaultLang);
-            var (t404, d404) = LoadLanguageSite(sourceDir, defaultLang);
+            // 默认语言目录不存在时（单语言站），回退到非语言页面
+            var pages404 = Directory.Exists(Path.Combine(sourceDir, defaultLang))
+                ? LoadPages(sourceDir, defaultLang)
+                : LoadPages(sourceDir, null);
+            var (t404, d404, e404) = LoadLanguageSite(sourceDir, defaultLang);
             var site404 = new SiteModel
             {
                 Title = t404 ?? _config.Title ?? "PicoSite",
@@ -402,6 +445,7 @@ public class SiteGenerator
                 Github = _config.Github,
                 Email = _config.Email,
                 Pages = pages404,
+                Variables = MergeVariables(e404),
             };
             var errorHtml = _templates.Render("404", site404, new PageModel { Title = "404", Url = "/404.html" }, "");
             File.WriteAllText(Path.Combine(outputDir, "404.html"), errorHtml);
@@ -435,19 +479,22 @@ public class SiteGenerator
         if (string.IsNullOrEmpty(url) || url == "/")
             return Path.Combine(outputDir, "index.html");
 
+        // 目录式 URL：/themes -> themes/index.html，与 serve 无后缀路由一致
         var relative = url.TrimStart('/');
-        if (!relative.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
-            relative += ".html";
-
-        return Path.Combine(outputDir, relative);
+        return Path.Combine(outputDir, relative, "index.html");
     }
 
     private void CopyThemeAssets(string outputDir)
     {
-        var themeAssetsDir = Path.Combine(AppContext.BaseDirectory, "Themes", _config.Theme ?? "default", "assets");
+        var themeAssetsDir = Path.Combine(_templates.ThemeDir, "assets");
         if (!Directory.Exists(themeAssetsDir)) return;
 
-        var dest = Path.Combine(outputDir, "themes", _config.Theme ?? "default", "assets");
+        // 目标目录名与模板变量 theme.assets 保持一致（基于主题目录名），
+        // 以支持 --theme-dir 加载目录名不同于 --theme 的主题；
+        // 配置了 baseUrl 时资源需输出到 {baseUrl}/themes/... 下，
+        // 与模板链接 {{ site.base_url }}{{ theme.assets }}/style.css 对应
+        var baseUrl = (_config.BaseUrl ?? "").Trim('/');
+        var dest = Path.Combine(outputDir, baseUrl, "themes", Path.GetFileName(_templates.ThemeDir), "assets");
         CopyDirectory(themeAssetsDir, dest);
     }
 

@@ -94,10 +94,15 @@ public class ServeCommand : Command
         });
 
         // 静态资源：主题 CSS/JS 等
+        // 注意：URL 前缀必须与模板变量 theme.assets 一致（基于主题目录名），
+        // 因为 --theme-dir 允许加载目录名不同于 --theme 的主题；
+        // 配置了 baseUrl 时还要带上 baseUrl 前缀（模板链接为 {{ site.base_url }}{{ theme.assets }}）
+        var baseUrl = (config.BaseUrl ?? "").TrimEnd('/');
+        var themeAssetsPrefix = "/themes/" + Path.GetFileName(themeDir) + "/assets";
         var themeAssetsDir = Path.Combine(themeDir, "assets");
         if (Directory.Exists(themeAssetsDir))
         {
-            app.AddStaticFiles("/themes/" + config.Theme + "/assets", themeAssetsDir);
+            app.AddStaticFiles(baseUrl + themeAssetsPrefix, themeAssetsDir);
         }
 
         // 中间件：处理所有页面请求
@@ -107,11 +112,27 @@ public class ServeCommand : Command
             {
                 var path = req.Url?.AbsolutePath ?? "/";
 
-                // 放行静态资源和 WebSocket
-                if (path.StartsWith("/themes/") || path == "/ws-reload")
+                // 配置了 baseUrl 时（如 GitHub Pages 子路径 /PicoSite/），
+                // 页面链接均带该前缀，剥离后再路由
+                if (baseUrl.Length > 0)
+                {
+                    if (path.Equals(baseUrl, StringComparison.OrdinalIgnoreCase)
+                        || path.Equals(baseUrl + "/", StringComparison.OrdinalIgnoreCase))
+                        path = "/";
+                    else if (path.StartsWith(baseUrl + "/", StringComparison.OrdinalIgnoreCase))
+                        path = path[baseUrl.Length..];
+                }
+
+                // 放行静态资源和 WebSocket（兼容带/不带 baseUrl 前缀两种路径）
+                if (path.StartsWith(baseUrl + themeAssetsPrefix)
+                    || path.StartsWith(themeAssetsPrefix)
+                    || path == "/ws-reload")
                     return true;
 
                 // 处理页面
+                // 兼容 .html 后缀输入（与构建产物/部署习惯对齐），剥掉后按无后缀路由
+                if (path.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
+                    path = path[..^".html".Length];
                 if (path.EndsWith("/index")) path = path[..^"index".Length];
 
                 // 解析语言：非默认语言前缀路由到对应语言，其余走默认语言
@@ -163,7 +184,16 @@ public class ServeCommand : Command
         string? language, List<string> languages, string defaultLang)
     {
         // 语言级站点配置（site.json 覆盖 title/description）
-        var (langTitle, langDesc) = generator.LoadLanguageSite(sourceDir, language);
+        var (langTitle, langDesc, langExtra) = generator.LoadLanguageSite(sourceDir, language);
+
+        // 合并自定义变量（picosite.json + 语言级 site.json，语言级优先）
+        var variables = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        if (config.Extra is not null)
+            foreach (var kv in config.Extra)
+                variables[kv.Key] = SiteGenerator.JsonElementToObject(kv.Value);
+        if (langExtra is not null)
+            foreach (var kv in langExtra)
+                variables[kv.Key] = kv.Value;
 
         return new SiteModel
         {
@@ -176,6 +206,7 @@ public class ServeCommand : Command
             Github = config.Github,
             Email = config.Email,
             Pages = generator.LoadPages(sourceDir, language),
+            Variables = variables,
         };
     }
 

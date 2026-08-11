@@ -2,8 +2,6 @@
 title: PicoSite 文档
 ---
 
-# PicoSite
-
 **零配置静态站点生成器** — 写 Markdown，运行两条命令，得到一个网站。
 
 - 轻量级，AOT 编译为 ~10MB 单文件，无运行时依赖

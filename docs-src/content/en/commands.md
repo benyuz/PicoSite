@@ -2,13 +2,13 @@
 title: Commands
 ---
 
-# Commands
-
 ## serve — Start the dev server
 
 ```bash
 picosite serve [--port 8090] [--theme default] [--theme-dir <path>]
 ```
+
+**Running `picosite` with no arguments is equivalent to `picosite serve`** (same behavior on Windows / Linux / macOS) — handy for a quick preview.
 
 - `--port`: preview port, default 8090
 - `--theme`: theme name

@@ -2,8 +2,6 @@
 title: Quick Start
 ---
 
-# Quick Start
-
 ## 1. Download
 
 Download the executable for your platform (Windows / Linux / macOS) from the [Releases](https://github.com/benyuz/PicoSite/releases) page.

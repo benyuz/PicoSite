@@ -2,8 +2,6 @@
 title: PicoSite Docs
 ---
 
-# PicoSite
-
 **Zero-config static site generator** — Write Markdown, run two commands, get a website.
 
 - Lightweight, AOT-compiled to a ~10MB single file, no runtime dependencies

@@ -215,20 +215,92 @@ public class SiteGeneratorTests : IDisposable
         WriteMd(Path.Combine(_sourceDir, "en", "site.json"),
             "{\n  \"title\": \"English Site\",\n  \"description\": \"English desc\"\n}");
 
-        var (title, desc) = _generator.LoadLanguageSite(_sourceDir, "en");
+        var (title, desc, extra) = _generator.LoadLanguageSite(_sourceDir, "en");
 
         Assert.Equal("English Site", title);
         Assert.Equal("English desc", desc);
+        Assert.Null(extra);
     }
 
     [Fact]
     public void LoadLanguageSite_NoSiteJson_ReturnsNull()
     {
         // zh 目录没有 site.json
-        var (title, desc) = _generator.LoadLanguageSite(_sourceDir, "zh");
+        var (title, desc, extra) = _generator.LoadLanguageSite(_sourceDir, "zh");
 
         Assert.Null(title);
         Assert.Null(desc);
+        Assert.Null(extra);
+    }
+
+    // ─── 动态变量（自定义字段）──────────────────────────
+
+    [Fact]
+    public void LoadLanguageSite_CustomFields_ReturnedAsExtra()
+    {
+        WriteMd(Path.Combine(_sourceDir, "zh", "site.json"),
+            "{\n  \"title\": \"中文站\",\n  \"author\": \"作者甲\",\n  \"version\": 42\n}");
+
+        var (title, _, extra) = _generator.LoadLanguageSite(_sourceDir, "zh");
+
+        Assert.Equal("中文站", title);
+        Assert.NotNull(extra);
+        Assert.Equal("作者甲", extra!["author"]);
+        Assert.Equal(42L, extra["version"]);
+    }
+
+    [Fact]
+    public void JsonElementToObject_ConvertsNestedStructures()
+    {
+        using var doc = System.Text.Json.JsonDocument.Parse(
+            "{\"name\":\"PicoSite\",\"enabled\":true,\"count\":7,\"tags\":[\"a\",\"b\"],\"nested\":{\"k\":\"v\"}}");
+
+        var result = SiteGenerator.JsonElementToObject(
+            doc.RootElement.EnumerateObject()
+                .ToDictionary(p => p.Name, p => p.Value));
+
+        Assert.Equal("PicoSite", result["name"]);
+        Assert.Equal(true, result["enabled"]);
+        Assert.Equal(7L, result["count"]);
+        Assert.Equal(new List<object> { "a", "b" }, result["tags"]);
+        var nested = Assert.IsType<Dictionary<string, object>>(result["nested"]);
+        Assert.Equal("v", nested["k"]);
+    }
+
+    [Fact]
+    public void Build_CustomVariables_InjectedIntoHtml()
+    {
+        // 自定义迷你主题，直接输出各层变量
+        var themeDir = Path.Combine(_root, "custom-theme");
+        Directory.CreateDirectory(Path.Combine(themeDir, "assets"));
+        const string tpl = "{{ site.title }}|{{ site.site_var }}|{{ site.lang_var }}|{{ page.author }}|{{ content }}";
+        File.WriteAllText(Path.Combine(themeDir, "index.html"), tpl);
+        File.WriteAllText(Path.Combine(themeDir, "page.html"), tpl);
+
+        // 语言级动态变量（site.json 自定义字段）
+        WriteMd(Path.Combine(_sourceDir, "zh", "site.json"),
+            "{\n  \"title\": \"中文站\",\n  \"lang_var\": \"语言级变量\"\n}");
+        // 页面级动态变量（front matter 自定义字段）
+        WriteMd(Path.Combine(_sourceDir, "zh", "about.md"),
+            "---\ntitle: 关于\nauthor: 张三\n---\n\n# 关于我们");
+
+        // 站点级动态变量（picosite.json 自定义字段）
+        var config = new SiteConfig { DefaultLanguage = "zh" };
+        config.Extra = System.Text.Json.JsonSerializer.Deserialize<
+            Dictionary<string, System.Text.Json.JsonElement>>(
+            "{\"site_var\":\"站点级变量\",\"site_num\":42}");
+
+        var outDir = Path.Combine(_root, "_site");
+        var gen = new SiteGenerator(new MarkdownParser(), new TemplateEngine(themeDir), config);
+        gen.Build(_sourceDir, outDir);
+
+        var html = File.ReadAllText(Path.Combine(outDir, "about", "index.html"));
+        Assert.Contains("站点级变量", html); // picosite.json Extra → {{ site.site_var }}
+        Assert.Contains("语言级变量", html); // site.json Extra → {{ site.lang_var }}
+        Assert.Contains("张三", html);       // front matter → {{ page.author }}
+
+        // 内置键不被自定义变量覆盖（site.json title 仍生效）
+        Assert.StartsWith("中文站|", html);
     }
 
     // ─── build 输出结构 + 语言标题 + 同页切换 ──────────
@@ -260,7 +332,32 @@ public class SiteGeneratorTests : IDisposable
         Assert.Contains("中文站", zhHtml);
 
         // 语言切换器同页互切：zh 的 about 页切 en → /en/about
-        var zhAbout = File.ReadAllText(Path.Combine(outDir, "about.html"));
+        var zhAbout = File.ReadAllText(Path.Combine(outDir, "about", "index.html"));
         Assert.Contains("/PicoSite/en/about", zhAbout);
+    }
+
+    [Fact]
+    public void Build_SingleLanguageWithDefaultLanguageConfig_RendersTable()
+    {
+        // 单语言站（无 zh/en 子目录）但配置了 defaultLanguage，不应崩溃（404 页回退非语言页面）
+        var themeDir = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory, "..", "..", "..", "..",
+            "PicoSite", "Themes", "default"));
+        if (!Directory.Exists(themeDir)) return;
+
+        var singleRoot = Path.Combine(_root, "single");
+        var singleSrc = Path.Combine(singleRoot, "content");
+        WriteMd(Path.Combine(singleSrc, "index.md"), "---\ntitle: 首页\n---\n\n# 单语言站点");
+        WriteMd(Path.Combine(singleSrc, "guide", "start.md"),
+            "---\ntitle: 快速开始\n---\n\n| 名称 | 说明 |\n| --- | --- |\n| PicoSite | 静态站点生成器 |");
+
+        var config = new SiteConfig { DefaultLanguage = "zh" };
+        var outDir = Path.Combine(singleRoot, "_site");
+        var gen = new SiteGenerator(new MarkdownParser(), new TemplateEngine(themeDir), config);
+        gen.Build(singleSrc, outDir);
+
+        Assert.True(File.Exists(Path.Combine(outDir, "index.html")));
+        Assert.True(File.Exists(Path.Combine(outDir, "404.html")));
+        Assert.Contains("<table>", File.ReadAllText(Path.Combine(outDir, "guide", "start", "index.html")));
     }
 }

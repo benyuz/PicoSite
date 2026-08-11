@@ -1,37 +1,250 @@
-﻿<!DOCTYPE html>
-<html lang="zh-CN">
+<!DOCTYPE html>
+<html lang="{{ site.language | default: "zh" }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page.title }} - {{ site.title }}</title>
-    <meta name="description" content="{{ site.description }}">
-    <link rel="stylesheet" href="{{ site.base_url }}{{ theme.assets }}/style.css">
-    <script>try{var t=localStorage.getItem('picosite-theme');if(!t&&matchMedia('(prefers-color-scheme: dark)').matches)t='dark';if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title }} | {{ site.title }}</title>
+  <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+  <meta property="og:title" content="{{ page.title }} | {{ site.title }}">
+  <meta property="og:description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="{{ site.base_url }}{{ page.url }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page.title }} | {{ site.title }}">
+  <link rel="canonical" href="{{ site.base_url }}{{ page.url }}">
+  <link rel="stylesheet" href="{{ site.base_url }}{{ theme.assets }}/style.css">
+  <script>try{var t=localStorage.getItem('picosite-theme');if(!t&&matchMedia('(prefers-color-scheme: dark)').matches)t='dark';if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 </head>
 <body>
-    {% include "header.html" %}
+  {% include "header.html" %}
 
-    <div class="layout">
-        {% include "sidebar.html" %}
+  <div class="docPage">
+    {% include "sidebar.html" %}
+    <main class="docMainContainer">
+      <div class="docItemWrapper">
+        <div class="docItemCol">
+          <div class="docItemContainer">
+            <!-- Breadcrumbs -->
+            <nav class="theme-doc-breadcrumbs" aria-label="Breadcrumb">
+              <ul class="breadcrumbs">
+                <li class="breadcrumbs__item">
+                  <a class="breadcrumbs__link" href="{{ site.base_url }}/">{{ theme.i18n.home }}</a>
+                </li>
+                {% if page.category %}
+                <li class="breadcrumbs__item">
+                  <a class="breadcrumbs__link" href="{{ site.base_url }}/{{ page.category }}">{{ page.category }}</a>
+                </li>
+                {% endif %}
+                <li class="breadcrumbs__item breadcrumbs__item--active">
+                  <span class="breadcrumbs__link">{{ page.title }}</span>
+                </li>
+              </ul>
+            </nav>
 
-        <main class="main">
-            <div class="doc page-content">
-                <nav class="breadcrumbs">
-                    <a href="{{ site.base_url }}/">{{ theme.i18n.home }}</a>
-                    <span class="sep">/</span>
-                    <span>{{ page.title }}</span>
-                </nav>
-                <article>
-                    <h1>{{ page.title }}</h1>
-                    {% if page.date %}
-                        <p class="page-date">{{ page.date }}</p>
+            <!-- Article Content -->
+            <article class="markdown">
+              <header>
+                {% unless page.has_content_h1 %}
+                <h1>{{ page.title }}</h1>
+                {% endunless %}
+              </header>
+              {% if page.date != "" %}
+              <p class="last-updated">{{ theme.i18n.last_updated }}: {{ page.date }}</p>
+              {% endif %}
+              {{ content | raw }}
+            </article>
+
+            <!-- Page Meta / Edit this page -->
+            <footer class="theme-doc-footer">
+              {% if site.github != "" %}
+              <a href="{{ site.github }}/blob/main/content{{ page.url }}.md" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                {{ theme.i18n.edit_this_page }}
+              </a>
+              {% endif %}
+            </footer>
+
+            <!-- Pagination -->
+            <nav class="pagination-nav" aria-label="Document navigation">
+              {% assign prev_page = null %}
+              {% assign next_page = null %}
+              {% assign found_current = false %}
+              {% for node in site.nav %}
+                {% if found_current and node.Children.size > 0 %}
+                  {% assign next_page = node.Children | first %}
+                {% endif %}
+                {% if node.Children.size > 0 %}
+                  {% for child in node.Children %}
+                    {% if found_current and next_page == null %}
+                      {% assign next_page = child %}
                     {% endif %}
-                    {{ content | raw }}
-                </article>
-            </div>
-        </main>
-    </div>
+                    {% if child.Url == page.url %}
+                      {% assign found_current = true %}
+                    {% elsif found_current == false %}
+                      {% assign prev_page = child %}
+                    {% endif %}
+                  {% endfor %}
+                {% else %}
+                  {% if node.Url == page.url %}
+                    {% assign found_current = true %}
+                  {% elsif found_current == false %}
+                    {% assign prev_page = node %}
+                  {% endif %}
+                {% endif %}
+                {% if next_page != null %}{% break %}{% endif %}
+              {% endfor %}
+              {% if prev_page != null %}
+              <a href="{{ site.base_url }}{{ prev_page.Url }}" class="pagination-nav__item">
+                <span class="pagination-nav__label">&larr; {{ theme.i18n.prev_page }}</span>
+                <span class="pagination-nav__sublabel">{{ prev_page.Title }}</span>
+              </a>
+              {% endif %}
+              {% if next_page != null %}
+              <a href="{{ site.base_url }}{{ next_page.Url }}" class="pagination-nav__item pagination-nav__item--next">
+                <span class="pagination-nav__label">{{ theme.i18n.next_page }} &rarr;</span>
+                <span class="pagination-nav__sublabel">{{ next_page.Title }}</span>
+              </a>
+              {% endif %}
+            </nav>
+          </div>
+        </div>
 
-    {% include "footer.html" %}
+        <!-- Right TOC (TableOfContents) -->
+        <aside class="tableOfContents" id="tableOfContents">
+          <div class="tableOfContents__title">{{ theme.i18n.table_of_contents }}</div>
+          <ul class="table-of-contents" id="toc-list"></ul>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <script>
+  (function() {
+    // ===== Generate TOC from article headings (h2, h3, h4) =====
+    var article = document.querySelector('article.markdown');
+    var tocList = document.getElementById('toc-list');
+    if (!article || !tocList) return;
+    var headings = article.querySelectorAll('h2, h3, h4');
+    if (headings.length < 2) {
+      document.getElementById('tableOfContents').style.display = 'none';
+      return;
+    }
+    headings.forEach(function(h, i) {
+      if (!h.id) {
+        h.id = 'toc-heading-' + i;
+      }
+      var li = document.createElement('li');
+      li.className = 'table-of-contents__item table-of-contents__item--' + h.tagName.toLowerCase();
+      var a = document.createElement('a');
+      a.className = 'table-of-contents__link';
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      tocList.appendChild(li);
+    });
+
+    // Active TOC link on scroll
+    var links = tocList.querySelectorAll('.table-of-contents__link');
+    if (links.length > 0) {
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            var id = entry.target.id;
+            links.forEach(function(l) {
+              l.classList.remove('table-of-contents__link--active');
+              if (l.getAttribute('href') === '#' + id) {
+                l.classList.add('table-of-contents__link--active');
+              }
+            });
+          }
+        });
+      }, { rootMargin: '-80px 0px -70% 0px' });
+      headings.forEach(function(h) { observer.observe(h); });
+    }
+
+    // ===== Code Block Enhancement: Add language label + copy button =====
+    var preBlocks = article.querySelectorAll('pre');
+    preBlocks.forEach(function(pre) {
+      var code = pre.querySelector('code');
+      if (!code) return;
+
+      // Determine language from class
+      var lang = '';
+      var codeClass = code.getAttribute('class') || '';
+      var match = codeClass.match(/language-(\w+)/);
+      if (match) {
+        lang = match[1];
+      }
+
+      // Mermaid 图表/脑图代码块由 mermaid.js 渲染，跳过代码块包装与复制按钮
+      if (lang === 'mermaid' || lang === 'mindmap') return;
+
+      // Wrap in theme-code-block container
+      var wrapper = document.createElement('div');
+      wrapper.className = 'theme-code-block';
+
+      // Create header with language
+      if (lang) {
+        var header = document.createElement('div');
+        header.className = 'theme-code-block__header';
+        var langSpan = document.createElement('span');
+        langSpan.className = 'theme-code-block__lang';
+        langSpan.textContent = lang;
+        header.appendChild(langSpan);
+        wrapper.appendChild(header);
+      }
+
+      // Create content div
+      var contentDiv = document.createElement('div');
+      contentDiv.className = 'theme-code-block__content';
+      pre.parentNode.insertBefore(wrapper, pre);
+      contentDiv.appendChild(pre);
+      wrapper.appendChild(contentDiv);
+
+      // Create copy button
+      var copyBtn = document.createElement('button');
+      copyBtn.className = 'copy-btn';
+      copyBtn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+      copyBtn.setAttribute('aria-label', 'Copy code to clipboard');
+      copyBtn.title = 'Copy';
+      contentDiv.appendChild(copyBtn);
+
+      // Copy functionality
+      copyBtn.addEventListener('click', function() {
+        var text = code.textContent || '';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function() {
+            copyBtn.classList.add('copy-btn--success');
+            copyBtn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Copy';
+            setTimeout(function() {
+              copyBtn.classList.remove('copy-btn--success');
+              copyBtn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+            }, 2000);
+          });
+        } else {
+          // Fallback
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          copyBtn.classList.add('copy-btn--success');
+          copyBtn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Copy';
+          setTimeout(function() {
+            copyBtn.classList.remove('copy-btn--success');
+            copyBtn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+          }, 2000);
+        }
+      });
+    });
+  })();
+  </script>
+
+  {% include "vendor-loader.html" %}
+
+  {% include "footer.html" %}
 </body>
 </html>

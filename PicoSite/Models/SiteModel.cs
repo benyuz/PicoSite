@@ -23,4 +23,8 @@ public class SiteModel
 
     /// <summary>联系邮箱（header 社交链接区用）。</summary>
     public string? Email { get; set; }
+
+    /// <summary>自定义变量：picosite.json / site.json 中未声明的字段，
+    /// 模板中通过 {{ site.xxx }} 访问。</summary>
+    public Dictionary<string, object> Variables { get; set; } = new();
 }

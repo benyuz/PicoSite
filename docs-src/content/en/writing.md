@@ -2,9 +2,7 @@
 title: Writing Content
 ---
 
-# Writing Content
-
-## Markdown
+## Markdown Syntax
 
 Place Markdown files under `content/`. File path = URL:
 
@@ -29,7 +27,74 @@ date: 2026-06-09
 Write **Markdown** here.
 ```
 
-Supported fields: `title`, `date`, plus any custom fields.
+Supported fields: `title`, `date`, plus any custom fields. Custom fields are available in theme templates via `{{ page.fieldName }}` (see "Dynamic variables" in [Theme Development](./themes.html)).
+
+## Formulas and Diagrams
+
+Markdown extensions (via Markdig):
+
+### Math (KaTeX)
+
+```markdown
+Inline math $E=mc^2$ and block math:
+
+$$
+\int_0^1 x^2 dx = \frac{1}{3}
+$$
+```
+
+KaTeX is loaded automatically when the page contains math (assets ship with the theme locally, offline-ready).
+
+Live preview:
+
+Inline math $E=mc^2$, and block math:
+
+$$
+\int_0^1 x^2 dx = \frac{1}{3}
+$$
+
+### Diagrams & Mind Maps (mermaid)
+
+````markdown
+```mermaid
+mindmap
+  root((PicoSite))
+    Static site generator
+      Blazing fast
+      Cross-platform
+    Multi-language
+    Theme system
+```
+````
+
+All mermaid diagram types are supported: `flowchart`, `sequenceDiagram`, `gantt` and more. mermaid.js is loaded automatically when the page contains a mermaid block (assets ship with the theme locally, offline-ready).
+
+Live preview (mind map + flow chart):
+
+```mermaid
+mindmap
+  root((PicoSite))
+    Static site generator
+      Blazing fast
+      Cross-platform
+    Multi-language
+    Theme system
+```
+
+```mermaid
+graph LR
+    A[Write Markdown] --> B{picosite build}
+    B --> C[Static site]
+```
+
+### Other Extensions
+
+| Syntax | Description |
+|--------|-------------|
+| `- [x] done` | GFM task list |
+| `~~deleted~~` | Strikethrough |
+| `:smile:` | Emoji shorthand |
+| `\| col \| col \|` | GFM table |
 
 ## Multi-language
 

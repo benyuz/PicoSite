@@ -2,8 +2,6 @@
 title: 快速上手
 ---
 
-# 快速上手
-
 ## 1. 下载
 
 从 [Releases](https://github.com/benyuz/PicoSite/releases) 下载对应平台的可执行文件（Windows / Linux / macOS）。

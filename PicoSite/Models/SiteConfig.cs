@@ -24,4 +24,9 @@ public class SiteConfig
 
     /// <summary>联系邮箱（配置后 header 显示邮箱链接）。</summary>
     public string? Email { get; set; }
+
+    /// <summary>自定义变量：picosite.json / site.json 中未声明的字段原样保留，
+    /// 通过模板变量 {{ site.xxx }} 访问（JSON 的任意字段均可作为动态变量）。</summary>
+    [System.Text.Json.Serialization.JsonExtensionData]
+    public Dictionary<string, System.Text.Json.JsonElement>? Extra { get; set; }
 }

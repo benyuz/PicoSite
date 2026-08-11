@@ -2,6 +2,7 @@
   "title": "PicoSite 文档",
   "description": "PicoSite 静态站点生成器文档",
   "defaultLanguage": "zh",
-  "baseUrl": "/PicoSite/",
-  "github": "https://github.com/benyuz/PicoSite"
+  "baseUrl": "/",
+  "github": "https://github.com/benyuz/PicoSite",
+  "command": "picosite serve"
 }
