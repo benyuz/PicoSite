@@ -491,10 +491,9 @@ public class SiteGenerator
 
         // 目标目录名与模板变量 theme.assets 保持一致（基于主题目录名），
         // 以支持 --theme-dir 加载目录名不同于 --theme 的主题；
-        // 配置了 baseUrl 时资源需输出到 {baseUrl}/themes/... 下，
-        // 与模板链接 {{ site.base_url }}{{ theme.assets }}/style.css 对应
-        var baseUrl = (_config.BaseUrl ?? "").Trim('/');
-        var dest = Path.Combine(outputDir, baseUrl, "themes", Path.GetFileName(_templates.ThemeDir), "assets");
+        // 磁盘输出不拼 baseUrl：输出目录即部署站点的根（如 GitHub Pages 项目站
+        // 将 _site 内容直接映射到 /PicoSite/ 下），baseUrl 仅体现在链接上
+        var dest = Path.Combine(outputDir, "themes", Path.GetFileName(_templates.ThemeDir), "assets");
         CopyDirectory(themeAssetsDir, dest);
     }
 

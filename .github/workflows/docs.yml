@@ -39,7 +39,7 @@ jobs:
       - name: Generate docs
         working-directory: docs-src
         run: |
-          dotnet run --project ../PicoSite/PicoSite.csproj -- build --output ./_site --baseUrl /PicoSite/
+          dotnet run --project ../PicoSite/PicoSite.csproj -- build --output ./_site
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
