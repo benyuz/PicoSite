@@ -47,37 +47,12 @@
           </div>
         </section>
 
-        <!-- Feature Cards (3-column) -->
-        <div class="features">
-          {% assign feature_count = 0 %}
-          {% for node in site.nav limit:6 %}
-          {% if node.Url != "/" %}
-          <div class="feature-card">
-            <div class="feature-card__icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                {% if feature_count == 0 %}<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>{% endif %}
-                {% if feature_count == 1 %}<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>{% endif %}
-                {% if feature_count == 2 %}<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>{% endif %}
-                {% if feature_count == 3 %}<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>{% endif %}
-                {% if feature_count == 4 %}<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>{% endif %}
-                {% if feature_count == 5 %}<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>{% endif %}
-              </svg>
-            </div>
-            <h3 class="feature-card__title">{{ node.Title }}</h3>
-            <p class="feature-card__desc">{% if node.Description %}{{ node.Description }}{% else %}{{ theme.i18n.feature_desc | replace: "{title}", node.Title }}{% endif %}</p>
-          </div>
-          {% assign feature_count = feature_count | plus: 1 %}
-          {% endif %}
-          {% endfor %}
-        </div>
-
         <!-- Getting Started（配置 site.command 后显示，支持任意命令） -->
         {% if site.command != "" %}
         <div class="getting-started">
           <h2>{{ theme.i18n.getting_started }}</h2>
           <p>{{ theme.i18n.getting_started_desc }}</p>
           <code>{{ site.command }}</code>
-          <p><a href="{{ site.base_url }}{% if first_doc %}{{ first_doc.Url }}{% else %}/{% endif %}" style="font-weight:600">{{ theme.i18n.browse_docs }} &rarr;</a></p>
         </div>
         {% endif %}
 
