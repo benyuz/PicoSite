@@ -189,6 +189,7 @@ The default theme (Docusaurus-style) ships with:
 | v1.0 | ✅ Released | Multi-language, auto tree nav (`site.nav`), theme polish (home aggregation + dark mode), 404 page, `--version` |
 | v1.2 | ✅ Released | Title search, homepage card excerpts (site.pages/nav gain Excerpt/Date/Description), inline SVG favicon, friendly missing-theme error, content width aligned with Docusaurus, serve accepts `.html` URLs, `--baseUrl` override for build |
 | v1.3 | ✅ Released | Publish/last-update dates (front matter `date`/`updated`), doc pagination ("prev/next") fixes, output dir cleared before each build, unified 1320px container width, sidebar narrowed to 260px with fixed expand/collapse arrows, prev/next pinned left/right |
+| v1.3.1 | ✅ Released | Search keyboard navigation (ArrowUp/ArrowDown), smooth scrolling & back-to-top button, 404 page dark mode support, auto-generate sitemap.xml & robots.txt, add llms.txt |
 | v2.0 | Planned | Plugin system |
 
 ---

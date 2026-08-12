@@ -2,7 +2,7 @@
 
 > 供后续开发续接使用。保持更新，改动相关章节后同步日期。
 
-- 最后更新：2026-08-07
+- 最后更新：2026-08-12
 - 仓库：https://github.com/benyuz/PicoSite
 - 文档站：https://benyuz.github.io/PicoSite/
 
@@ -12,13 +12,14 @@
 
 **PicoSite** — 基于 .NET 10 的零配置静态站点生成器：写 Markdown，运行两条命令（`serve` / `build`），得到一个网站。AOT 编译为 ~10MB 单文件，无运行时依赖。
 
-## 2. 当前状态（v1.3 已发布）
+## 2. 当前状态（v1.3.1 已发布）
 
 | 里程碑 | 状态 |
 |--------|------|
 | v1.0 | ✅ 已发布（Release `v1.0.0`，4 平台 AOT 产物） |
 | v1.2 | ✅ 已发布（标题搜索、首页摘要、favicon、--baseUrl 等） |
 | v1.3 | ✅ 已发布（发布时间/更新时间显示、构建前清空输出目录、主题 UI 优化等） |
+| v1.3.1 | ✅ 已发布（搜索键盘导航、平滑滚动、返回顶部、自动生成 sitemap/robots、llms.txt） |
 | v2.0 | 📋 规划中：插件系统 |
 
 **v1.0 完成的功能：**
@@ -77,7 +78,7 @@ Build: 每页写 HTML；Serve: 中间件按需渲染 + WebSocket 热重载
 
 | 资产 | 地址 |
 |------|------|
-| Release | https://github.com/benyuz/PicoSite/releases （v1.0.0 / v1.2.0 / v1.3.0 + 4 平台产物） |
+| Release | https://github.com/benyuz/PicoSite/releases （v1.0.0 / v1.2.0 / v1.3.0 / v1.3.1 + 4 平台产物） |
 | 文档站 | https://benyuz.github.io/PicoSite/ |
 | Actions | ci（build+test）/ release（AOT 4 平台）/ docs（Pages 部署） |
 | Issues | 8 个（v1.0 已关；#24 插件挂起） |
@@ -126,12 +127,14 @@ dotnet test                     # 某些会话环境可能被 hook 拦截，用 
 |------|------|------|
 | v1.2 | ✅ 已发布：标题搜索、首页卡片摘要（Excerpt/Date/Description）、内联 SVG favicon、主题缺失友好提示、内容宽度对齐 Docusaurus、serve 兼容 .html、build --baseUrl | 已发布 Release `v1.2.0` |
 | v1.3 | ✅ 已发布：页面发布时间/更新时间（front matter `date`/`updated`）、文档分页"上一篇/下一篇"修复、构建前自动清空输出目录、首页容器限宽 1320px、卡片标题链接化与 4 列弹性、侧边栏缩窄 260px 与箭头指示修复、分页左右位置固定 | 已发布 Release `v1.3.0` |
+| v1.3.1 | ✅ 已发布：搜索键盘上下键导航、平滑滚动与返回顶部按钮、404 页暗色模式适配、删除 footer 重复脚本、自动生成 sitemap.xml 与 robots.txt、添加 llms.txt | 已发布 Release `v1.3.1` |
 | v2.0 | 插件系统 | 接口设计需谨慎，独占版本 |
 
 ## 11. 遗留 / 待办
 
 - [x] v1.2：标题搜索、首页摘要、favicon、--baseUrl、主题缺失提示
 - [x] v1.3：发布时间/更新时间、分页修复、构建前清空输出目录、主题 UI 优化
+- [x] v1.3.1：搜索键盘导航、平滑滚动与返回顶部、404 暗色模式、自动生成 sitemap/robots、llms.txt
 - [ ] v2.0：插件系统（#24）
 - [ ] docs-src 内容可继续扩充（命令/主题/多语言章节已有）
 - [ ] 默认语言切换器在"非语言页面"（如 blog/）上的行为可再打磨
