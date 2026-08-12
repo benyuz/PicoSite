@@ -1,0 +1,119 @@
+# PicoSite — Zero-Config Static Site Generator
+
+> Write Markdown, run two commands, get a website.
+
+PicoSite is a lightweight, zero-configuration static site generator built with .NET 10. It compiles to a single ~10MB AOT binary with no runtime dependencies. Unlike Node.js-based SSGs that are bloated and slow, or Go/Rust alternatives that follow rigid "config-driven + theme" patterns, PicoSite aims to be simple, no burden, and just works.
+
+## Quick Start
+
+1. Put `picosite` binary in your Markdown folder
+2. Run `picosite serve` and open http://localhost:8090 to preview
+3. Edit Markdown — browser auto-reloads
+4. Run `picosite build` to generate static files to `_site/`
+
+## Commands
+
+- `picosite serve` — Start dev server with hot reload
+- `picosite build` — Generate static files to `_site/`
+
+### Options
+
+| Option | Applies to | Default |
+|--------|-----------|---------|
+| `--port 3000` | serve | 8090 |
+| `--theme dark` | serve, build | default |
+| `--theme-dir ./Themes/default` | serve, build | Themes/ directory next to exe |
+| `--output ./dist` | build | ./_site |
+| `--baseUrl /PicoSite/` | build | baseUrl from picosite.json |
+
+## Writing Content
+
+Place Markdown files under `content/`. File path = URL:
+
+```
+content/index.md      → /
+content/about.md      → /about
+content/blog/post.md  → /blog/post
+```
+
+Add YAML Front Matter at the top:
+
+```markdown
+---
+title: My Article
+date: 2026-06-09
+---
+```
+
+## Key Features
+
+- **Zero Configuration** — No config file needed. Just run it.
+- **Hot Reload** — Live preview while editing Markdown.
+- **Multi-language** — ISO language subdirectories auto-detected.
+- **Liquid Templates** — Fluid.Core-based theme system with full customization.
+- **Dark Mode** — Built-in theme switcher with localStorage persistence.
+- **SEO Ready** — Auto-generates sitemap.xml and robots.txt on build.
+- **Math & Diagrams** — KaTeX and Mermaid.js support built-in.
+- **Code Highlighting** — highlight.js with dark theme.
+- **AOT Compiled** — Single ~10MB binary, no .NET runtime needed.
+
+## Project Structure
+
+```
+PicoSite/
+├── Commands/           # CLI command implementations
+│   ├── BuildCommand.cs     # `picosite build` handler
+│   ├── ServeCommand.cs     # `picosite serve` handler
+│   └── GetVersionCommand.cs
+├── Models/             # Data models
+│   ├── SiteConfig.cs       # Configuration model
+│   ├── SiteModel.cs        # Site data model passed to templates
+│   ├── PageModel.cs        # Single page metadata
+│   ├── NavNode.cs          # Navigation tree node
+│   └── ChineseLocalization.cs
+├── Services/           # Core business logic
+│   ├── ConfigLoader.cs     # Loads picosite.json config
+│   ├── MarkdownParser.cs   # Parses .md + YAML front matter → HTML
+│   ├── SiteGenerator.cs    # Builds static site, generates sitemap/robots
+│   ├── TemplateEngine.cs   # Liquid template rendering
+│   ├── HotReloadService.cs # File watcher for dev server
+│   └── PicoSiteJsonContext.cs  # Native AOT JSON source generator
+├── Themes/default/     # Default theme (Liquid templates)
+│   ├── index.html          # Home page template
+│   ├── page.html           # Article page template
+│   ├── header.html         # Navbar + search
+│   ├── footer.html         # Footer
+│   ├── sidebar.html        # Sidebar menu
+│   ├── 404.html            # 404 error page
+│   ├── vendor-loader.html  # 3rd-party JS/CSS loader
+│   └── assets/style.css    # Theme styles (light/dark)
+├── PicoSite.csproj     # Project file (targets net10.0, AOT)
+└── Program.cs          # Entry point, CLI root command
+```
+
+## Configuration (picosite.json)
+
+```json
+{
+  "title": "My Site",
+  "baseUrl": "/",
+  "theme": "default"
+}
+```
+
+Per-language overrides via `content/zh/site.json`, `content/en/site.json`, etc.
+
+## Technical Stack
+
+- **Runtime:** .NET 10 (Native AOT)
+- **Markdown:** Markdig 0.40
+- **Templates:** Fluid.Core 2.31 (Liquid)
+- **CLI:** System.CommandLine
+- **Dev Server:** PicoServer 1.7 (embedded HTTP server with hot reload)
+- **Frontend:** KaTeX, Mermaid.js, highlight.js
+
+## Links
+
+- **Docs:** https://benyuz.github.io/PicoSite/
+- **Releases:** https://github.com/benyuz/PicoSite/releases
+- **Source:** https://github.com/benyuz/PicoSite
