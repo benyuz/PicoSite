@@ -208,9 +208,18 @@
     searchInput.addEventListener('focus', function() { if (searchInput.value.trim()) renderSearch(searchInput.value); });
     searchInput.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') { searchInput.blur(); searchResults.hidden = true; }
+      var items = searchResults.querySelectorAll('.navbar__search-result');
+      if (!items.length) return;
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        var idx = Array.prototype.indexOf.call(items, document.activeElement);
+        idx = e.key === 'ArrowDown' ? Math.min(idx + 1, items.length - 1) : Math.max(idx - 1, 0);
+        items[idx].focus();
+        return;
+      }
       if (e.key === 'Enter') {
-        var first = searchResults.querySelector('.navbar__search-result');
-        if (first) location.href = first.getAttribute('href');
+        var active = searchResults.querySelector('.navbar__search-result:focus');
+        if (active) location.href = active.getAttribute('href');
       }
     });
     document.addEventListener('click', function(e) {

@@ -242,7 +242,7 @@
 
 /* ===== Reset & Base ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:var(--ifm-font-size-base);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+html{font-size:var(--ifm-font-size-base);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;scroll-behavior:smooth}
 body{font-family:var(--ifm-font-family-base);font-size:1rem;line-height:var(--ifm-line-height-base);color:var(--ifm-font-color-base);background:var(--ifm-background-color);transition:background var(--ifm-transition-normal),color var(--ifm-transition-normal);overflow-x:hidden}
 a{color:var(--ifm-link-color);text-decoration:none;transition:color var(--ifm-transition-fast)}
 a:hover{color:var(--ifm-link-hover-color)}
@@ -493,6 +493,12 @@ kbd{background:var(--ifm-background-surface-color);border:1px solid var(--ifm-bo
 .error-page__title{font-size:1.5rem;font-weight:700;margin-bottom:0.5rem}
 .error-page__desc{color:var(--ifm-font-color-secondary);margin-bottom:1.5rem;font-size:0.95rem}
 .error-page__actions{display:flex;justify-content:center;gap:0.75rem;flex-wrap:wrap}
+
+/* ===== Back to Top ===== */
+.back-to-top{position:fixed;right:1.5rem;bottom:2rem;z-index:100;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;border:1px solid var(--ifm-border-color);background:var(--ifm-background-surface-color);color:var(--ifm-font-color-secondary);cursor:pointer;opacity:0;transform:translateY(12px);transition:opacity var(--ifm-transition-fast),transform var(--ifm-transition-fast),box-shadow var(--ifm-transition-fast);box-shadow:var(--ifm-global-shadow-sm)}
+.back-to-top--visible{opacity:1;transform:translateY(0)}
+.back-to-top:hover{color:var(--ifm-color-primary);border-color:var(--ifm-color-primary);box-shadow:var(--ifm-global-shadow-md)}
+.back-to-top svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
 
 /* ===== Responsive ===== */
 @media(max-width:996px){

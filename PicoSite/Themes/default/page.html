@@ -248,6 +248,21 @@
 
   {% include "vendor-loader.html" %}
 
+  <!-- Back to top -->
+  <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+  <script>
+  (function() {
+    var btn = document.getElementById('back-to-top');
+    if (!btn) return;
+    window.addEventListener('scroll', function() {
+      btn.classList.toggle('back-to-top--visible', window.scrollY > 400);
+    }, {passive: true});
+    btn.addEventListener('click', function() { window.scrollTo({top: 0, behavior: 'smooth'}); });
+  })();
+  </script>
+
   {% include "footer.html" %}
 </body>
 </html>
