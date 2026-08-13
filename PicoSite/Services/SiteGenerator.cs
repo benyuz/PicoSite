@@ -472,22 +472,25 @@ public class SiteGenerator
             File.WriteAllText(Path.Combine(outputDir, "404.html"), errorHtml);
         }
 
-        // 3) 自动生成 sitemap.xml
+        // 3) 自动生成 sitemap.xml（配置了 SiteUrl 时输出绝对 URL，符合搜索引擎规范）
         var baseUrl = (_config.BaseUrl ?? "").TrimEnd('/');
+        var siteOrigin = (_config.SiteUrl ?? "").TrimEnd('/');
         var allPages = LoadAllPages(sourceDir);
         var sb = new System.Text.StringBuilder();
         sb.AppendLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         sb.AppendLine("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
         foreach (var p in allPages)
         {
-            sb.AppendLine($"  <url><loc>{baseUrl}{p.Url}</loc></url>");
+            var loc = System.Security.SecurityElement.Escape(siteOrigin + baseUrl + p.Url);
+            sb.AppendLine($"  <url><loc>{loc}</loc></url>");
         }
         sb.AppendLine("</urlset>");
         File.WriteAllText(Path.Combine(outputDir, "sitemap.xml"), sb.ToString());
 
         // 4) 自动生成 robots.txt
+        var sitemapUrl = siteOrigin + baseUrl + "/sitemap.xml";
         File.WriteAllText(Path.Combine(outputDir, "robots.txt"),
-            "User-agent: *\nAllow: /\nSitemap: " + baseUrl + "/sitemap.xml\n");
+            "User-agent: *\nAllow: /\nSitemap: " + sitemapUrl + "\n");
     }
 
     private void RenderPageToFile(PageModel page, SiteModel site, string outputDir, string? language = null)

@@ -3,6 +3,7 @@
   "description": "基于 .NET 开源平台的零配置静态站点生成器",
   "defaultLanguage": "zh",
   "baseUrl": "/PicoSite/",
+  "siteUrl": "https://benyuz.github.io",
   "github": "https://github.com/benyuz/PicoSite",
   "command": "picosite serve"
 }

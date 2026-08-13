@@ -19,6 +19,13 @@ public class SiteConfig
     /// </summary>
     public string? BaseUrl { get; set; }
 
+    /// <summary>
+    /// 站点域名（如 "https://benyuz.github.io"，不带末尾斜杠）。
+    /// 配置后 sitemap.xml / robots.txt 生成绝对 URL（搜索引擎规范要求）；
+    /// 未配置时回退相对路径。
+    /// </summary>
+    public string? SiteUrl { get; set; }
+
     /// <summary>GitHub 仓库链接（配置后 header 显示 GitHub 链接）。</summary>
     public string? Github { get; set; }
 
